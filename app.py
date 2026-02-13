@@ -23,6 +23,10 @@ yolo_model = YOLO('model/yolo_kaggle/best.pt')
 # Face Detection
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+def clear_screen():
+    """Clear terminal screen"""
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def load_embeddings():
     """Load face embeddings from JSON"""
     if EMBEDDINGS_FILE.exists():
@@ -125,9 +129,11 @@ def register_face(name):
         embeddings[name] = avg_embedding
         save_embeddings(embeddings)
         print(f"✓ {name} registered successfully with {collected} samples!")
+        input("Tekan Enter untuk kembali...")
         return True
     else:
         print(f"❌ Need at least 5 samples! (Collected: {collected})")
+        input("Tekan Enter untuk kembali...")
         return False
 
 def get_category_selection():
@@ -170,8 +176,289 @@ def get_label_color(label):
     else:
         return (0, 255, 0)   # Green
 
-def save_check_record(name, category, result, last_state, last_save_time, debounce_seconds=2):
-    """Save APD check result to JSON only if state changed AND debounce time passed"""
+def save_check_record(name, results_dict, last_state, last_save_time, debounce_seconds=2):
+    """Save APD check result to JSON only if ANY state changed AND debounce time passed"""
+    import time
+    
+    state_key = f"{name}"
+    time_key = f"{state_key}_time"
+    current_time = time.time()
+    
+    # Create state string for comparison
+    current_state = json.dumps(results_dict, sort_keys=True)
+    
+    # Check if state is same as last time
+    if current_state == last_state.get(state_key):
+        return False
+    
+    # Check if enough time has passed since last save (debounce)
+    last_save = last_save_time.get(time_key, 0)
+    if current_time - last_save < debounce_seconds:
+        return False
+    
+    # State changed AND debounce passed, save it
+    record = {
+        "name": name,
+        "is_mask": results_dict.get("is_mask", False),
+        "is_glove": results_dict.get("is_glove", False),
+        "is_helm": results_dict.get("is_helm", False),
+        "timestamp": datetime.now().isoformat()
+    }
+    
+    records_file = RECORDS_DIR / f"{name}_records.json"
+    records = []
+    
+    if records_file.exists():
+        with open(records_file, 'r') as f:
+            records = json.load(f)
+    
+    records.append(record)
+    
+    with open(records_file, 'w') as f:
+        json.dump(records, f, indent=2)
+    
+    # Update last state and time
+    last_state[state_key] = current_state
+    last_save_time[time_key] = current_time
+    
+    print(f"✓ Record saved: {name} - Mask: {record['is_mask']}, Glove: {record['is_glove']}, Helm: {record['is_helm']}")
+    return True
+
+def check_apd():
+    """Main check APD - pilih kategori atau all"""
+    while True:
+        clear_screen()
+        print("\n" + "="*40)
+        print("PILIH KATEGORI APD")
+        print("="*40)
+        print("1. Masker (Mask/No-Mask)")
+        print("2. Sarung Tangan (Glove/No-Glove)")
+        print("3. Helm (Helm/No-Helm)")
+        print("4. Check ALL (Mask, Glove, Helm)")
+        print("5. Kembali ke Menu Utama")
+        choice = input("Pilih (1/2/3/4/5): ").strip()
+        
+        if choice == "1":
+            clear_screen()
+            check_apd_category("mask")
+            break
+        elif choice == "2":
+            clear_screen()
+            check_apd_category("glove")
+            break
+        elif choice == "3":
+            clear_screen()
+            check_apd_category("helm")
+            break
+        elif choice == "4":
+            clear_screen()
+            check_apd_all()
+            break
+        elif choice == "5":
+            clear_screen()
+            return
+        else:
+            print("❌ Pilihan tidak valid!")
+            input("Tekan Enter untuk lanjut...")
+
+def check_apd_category(category):
+    """Check APD untuk satu kategori saja"""
+    cap = cv2.VideoCapture(0)
+    embeddings = load_embeddings()
+    
+    if not embeddings:
+        print("❌ Tidak ada face yang terdaftar! Silakan register dulu.")
+        cap.release()
+        input("Tekan Enter untuk kembali...")
+        return
+    
+    print(f"Checking: {category.upper()}")
+    print("Press 'q' to exit")
+    
+    excluded = {"safety cone", "safety vest", "no safety vest", "machinery", "vehicle", "no safety cone"}
+    recognized_name = None
+    last_state = {}
+    last_save_time = {}
+    
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        
+        # Face detection & recognition
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        
+        for (x, y, w, h) in faces:
+            recognized_name = recognize_face(frame, (x, y, w, h), embeddings)
+            
+            color = (0, 255, 0) if recognized_name else (0, 0, 255)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
+            
+            if recognized_name:
+                cv2.putText(frame, f"✓ {recognized_name}", (x, y-10),
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+            else:
+                cv2.putText(frame, "Unknown", (x, y-10),
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+        
+        # YOLO APD detection
+        results = yolo_model(frame, conf=0.1)[0]
+        
+        best_result = None
+        best_conf = 0
+        
+        for box in results.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            conf = float(box.conf[0])
+            cls = int(box.cls[0])
+            label = yolo_model.names[cls] if hasattr(yolo_model, 'names') else str(cls)
+            
+            label = replace_label_names(label)
+            norm = normalize_label(label)
+            
+            if norm in excluded:
+                continue
+            
+            if category in label.lower():
+                if conf > best_conf:
+                    best_result = label
+                    best_conf = conf
+        
+        # Draw result
+        if best_result:
+            color = get_label_color(best_result)
+            display_text = f"{category.upper()}: {best_result} {best_conf:.2f}"
+            cv2.putText(frame, display_text, (10, 30),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            
+            # Save record
+            if recognized_name:
+                results_dict = {f"is_{category}": not best_result.lower().startswith("no")}
+                save_check_record_single(recognized_name, category, best_result, last_state, last_save_time)
+        else:
+            cv2.putText(frame, f"{category.upper()}: -", (10, 30),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (100, 100, 100), 2)
+        
+        cv2.imshow("APD Check", frame)
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    
+    cap.release()
+    cv2.destroyAllWindows()
+    clear_screen()
+
+def check_apd_all():
+    """Check APD - cek SEMUA kategori sekaligus"""
+    cap = cv2.VideoCapture(0)
+    embeddings = load_embeddings()
+    
+    if not embeddings:
+        print("❌ Tidak ada face yang terdaftar! Silakan register dulu.")
+        cap.release()
+        input("Tekan Enter untuk kembali...")
+        return
+    
+    print(f"Checking: MASK, GLOVE, HELM")
+    print("Press 'q' to exit")
+    
+    excluded = {"safety cone", "safety vest", "no safety vest", "machinery", "vehicle", "no safety cone"}
+    recognized_name = None
+    last_state = {}
+    last_save_time = {}
+    
+    categories = ["mask", "glove", "helm"]
+    
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        
+        # Face detection & recognition
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        
+        for (x, y, w, h) in faces:
+            recognized_name = recognize_face(frame, (x, y, w, h), embeddings)
+            
+            color = (0, 255, 0) if recognized_name else (0, 0, 255)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
+            
+            if recognized_name:
+                cv2.putText(frame, f"✓ {recognized_name}", (x, y-10),
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+            else:
+                cv2.putText(frame, "Unknown", (x, y-10),
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+        
+        # YOLO APD detection for ALL categories
+        results = yolo_model(frame, conf=0.1)[0]
+        
+        # Track best result per category (highest confidence)
+        best_results = {}  # {category: label}
+        best_conf = {}     # {category: confidence}
+        
+        for box in results.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            conf = float(box.conf[0])
+            cls = int(box.cls[0])
+            label = yolo_model.names[cls] if hasattr(yolo_model, 'names') else str(cls)
+            
+            label = replace_label_names(label)
+            norm = normalize_label(label)
+            
+            if norm in excluded:
+                continue
+            
+            # Check semua kategori
+            for category in categories:
+                if category in label.lower():
+                    # Keep only highest confidence result per category
+                    if category not in best_conf or conf > best_conf[category]:
+                        best_results[category] = label
+                        best_conf[category] = conf
+        
+        # Draw results untuk semua kategori
+        y_offset = 30
+        for category in categories:
+            if category in best_results:
+                label = best_results[category]
+                color = get_label_color(label)
+                conf = best_conf[category]
+                display_text = f"{category.upper()}: {label} {conf:.2f}"
+            else:
+                color = (100, 100, 100)
+                display_text = f"{category.upper()}: -"
+            
+            cv2.putText(frame, display_text, (10, y_offset),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            y_offset += 25
+        
+        # Save record only if person recognized (save ALL results at once)
+        if recognized_name:
+            results_dict = {}
+            for category in categories:
+                # Check if kategori ini ada hasil dan tidak "No-"
+                if category in best_results:
+                    label = best_results[category]
+                    results_dict[f"is_{category}"] = not label.lower().startswith("no")
+                else:
+                    results_dict[f"is_{category}"] = False
+            
+            save_check_record(recognized_name, results_dict, last_state, last_save_time)
+        
+        cv2.imshow("APD Check", frame)
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    
+    cap.release()
+    cv2.destroyAllWindows()
+    clear_screen()
+
+def save_check_record_single(name, category, result, last_state, last_save_time, debounce_seconds=2):
+    """Save single category record"""
     import time
     
     state_key = f"{name}_{category}"
@@ -214,109 +501,10 @@ def save_check_record(name, category, result, last_state, last_save_time, deboun
     print(f"✓ Record saved: {name} - {category.upper()}: {result}")
     return True
 
-def check_apd(selected_category):
-    """Main check APD dengan face recognition"""
-    import time
-    
-    cap = cv2.VideoCapture(0)
-    embeddings = load_embeddings()
-    
-    if not embeddings:
-        print("❌ Tidak ada face yang terdaftar! Silakan register dulu.")
-        cap.release()
-        return
-    
-    print(f"\nChecking: {selected_category.upper()}")
-    print("Press 'q' to exit")
-    
-    excluded = {"safety cone", "safety vest", "no safety vest", "machinery", "vehicle", "no safety cone"}
-    recognized_name = None
-    last_state = {}  # Track last saved state
-    last_save_time = {}  # Track last save time for debouncing
-    
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-        
-        # Face detection & recognition
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-        
-        for (x, y, w, h) in faces:
-            recognized_name = recognize_face(frame, (x, y, w, h), embeddings)
-            
-            color = (0, 255, 0) if recognized_name else (0, 0, 255)
-            cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
-            
-            if recognized_name:
-                cv2.putText(frame, f"✓ {recognized_name}", (x, y-10),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
-            else:
-                cv2.putText(frame, "Unknown", (x, y-10),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
-        
-        # YOLO APD detection
-        results = yolo_model(frame, conf=0.1)[0]
-        
-        # Track best result per category (highest confidence)
-        best_result = {}
-        best_conf = {}
-        
-        for box in results.boxes:
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            conf = float(box.conf[0])
-            cls = int(box.cls[0])
-            label = yolo_model.names[cls] if hasattr(yolo_model, 'names') else str(cls)
-            
-            label = replace_label_names(label)
-            norm = normalize_label(label)
-            
-            if norm in excluded:
-                continue
-            
-            if selected_category not in label.lower():
-                continue
-            
-            # Keep only highest confidence result
-            if selected_category not in best_conf or conf > best_conf[selected_category]:
-                best_result[selected_category] = label
-                best_conf[selected_category] = conf
-        
-        # Draw and save only best result
-        if selected_category in best_result:
-            label = best_result[selected_category]
-            color = get_label_color(label)
-            
-            # Find a box to draw (just for visualization)
-            for box in results.boxes:
-                x1, y1, x2, y2 = map(int, box.xyxy[0])
-                conf = float(box.conf[0])
-                cls = int(box.cls[0])
-                temp_label = yolo_model.names[cls] if hasattr(yolo_model, 'names') else str(cls)
-                temp_label = replace_label_names(temp_label)
-                
-                if selected_category in temp_label.lower():
-                    label_y = y1 - 10 if "Helm" in label else y1 + 20
-                    cv2.putText(frame, f"{label} {best_conf[selected_category]:.2f}", (x1, label_y),
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-                    break
-            
-            # Save record only if state changed (with debounce)
-            if recognized_name:
-                save_check_record(recognized_name, selected_category, label, last_state, last_save_time)
-        
-        cv2.imshow("APD Check", frame)
-        
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    
-    cap.release()
-    cv2.destroyAllWindows()
-
 def main_menu():
     """Main menu"""
     while True:
+        clear_screen()
         print("\n" + "="*40)
         print("APD CHECK SYSTEM")
         print("="*40)
@@ -327,20 +515,25 @@ def main_menu():
         choice = input("Pilih menu (1/2/3/4): ").strip()
         
         if choice == "1":
+            clear_screen()
             name = input("Masukkan nama: ").strip()
             if name:
                 register_face(name)
+            clear_screen()
         elif choice == "2":
-            category = get_category_selection()
-            if category:
-                check_apd(category)
+            check_apd()
         elif choice == "3":
+            clear_screen()
             view_records()
+            input("Tekan Enter untuk kembali ke menu utama...")
+            clear_screen()
         elif choice == "4":
+            clear_screen()
             print("Goodbye!")
             break
         else:
-            print("Pilihan tidak valid!")
+            print("❌ Pilihan tidak valid!")
+            input("Tekan Enter untuk lanjut...")
 
 def view_records():
     """View all records"""
@@ -355,8 +548,12 @@ def view_records():
             records = json.load(f)
             name = record_file.stem.replace("_records", "")
             print(f"\n{name}:")
-            for record in records[-5:]:  # Show last 5 records
-                print(f"  - {record['category'].upper()}: {record['result']} ({record['timestamp']})")
+            for record in records[-10:]:  # Show last 10 records
+                mask_status = "✓ Mask" if record.get('is_mask', False) else "✗ No-Mask"
+                glove_status = "✓ Glove" if record.get('is_glove', False) else "✗ No-Glove"
+                helm_status = "✓ Helm" if record.get('is_helm', False) else "✗ No-Helm"
+                print(f"  [{record['timestamp']}]")
+                print(f"    {mask_status} | {glove_status} | {helm_status}")
 
 if __name__ == "__main__":
     main_menu()

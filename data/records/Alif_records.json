@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Alif",
+    "category": "mask",
+    "result": "NO-Mask",
+    "timestamp": "2026-02-13T16:07:49.453356"
+  },
+  {
+    "name": "Alif",
+    "category": "mask",
+    "result": "Mask",
+    "timestamp": "2026-02-13T16:08:01.587270"
+  },
+  {
+    "name": "Alif",
+    "category": "mask",
+    "result": "NO-Mask",
+    "timestamp": "2026-02-13T16:08:06.156086"
+  },
+  {
+    "name": "Alif",
+    "is_mask": false,
+    "is_glove": false,
+    "is_helm": false,
+    "timestamp": "2026-02-13T16:08:14.862416"
+  },
+  {
+    "name": "Alif",
+    "is_mask": true,
+    "is_glove": false,
+    "is_helm": false,
+    "timestamp": "2026-02-13T16:08:16.931459"
+  }
+]
