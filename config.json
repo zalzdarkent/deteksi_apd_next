@@ -1,9 +1,25 @@
 {
-  "custom": {
-    "mask": true,
-    "glove": false,
-    "helm": false,
-    "glasses": false,
-    "boots": false
+  "areas": {
+    "Casting": {
+      "mask": true,
+      "glove": true,
+      "helm": true,
+      "glasses": true,
+      "boots": true
+    },
+    "Machining": {
+      "mask": false,
+      "glove": true,
+      "helm": true,
+      "glasses": true,
+      "boots": true
+    },
+    "Molding": {
+      "mask": true,
+      "glove": false,
+      "helm": true,
+      "glasses": false,
+      "boots": true
+    }
   }
 }
