@@ -1,0 +1,70 @@
+{
+  "violation_count": 5,
+  "violations": [
+    {
+      "id": "1771987630428_5289",
+      "name": "Unknown",
+      "timestamp": "2026-02-25T09:47:10.428876",
+      "violations_detail": {
+        "is_mask": false,
+        "is_glove": null,
+        "is_helm": null,
+        "is_glasses": null,
+        "is_boots": null
+      },
+      "path_image": "violations/2026-02-25/Unknown_20260225_094710.jpg"
+    },
+    {
+      "id": "1771988044484_3268",
+      "name": "Unknown",
+      "timestamp": "2026-02-25T09:54:04.484575",
+      "violations_detail": {
+        "is_mask": false,
+        "is_glove": null,
+        "is_helm": null,
+        "is_glasses": null,
+        "is_boots": null
+      },
+      "path_image": "violations/2026-02-25/Unknown_20260225_095404.jpg"
+    },
+    {
+      "id": "1771988190534_4448",
+      "name": "Unknown",
+      "timestamp": "2026-02-25T09:56:30.534024",
+      "violations_detail": {
+        "is_mask": false,
+        "is_glove": false,
+        "is_helm": false,
+        "is_glasses": false,
+        "is_boots": false
+      },
+      "path_image": "violations/2026-02-25/Unknown_20260225_095630.jpg"
+    },
+    {
+      "id": "1771988200660_5966",
+      "name": "Unknown",
+      "timestamp": "2026-02-25T09:56:40.660038",
+      "violations_detail": {
+        "is_mask": false,
+        "is_glove": false,
+        "is_helm": true,
+        "is_glasses": false,
+        "is_boots": false
+      },
+      "path_image": "violations/2026-02-25/Unknown_20260225_095640.jpg"
+    },
+    {
+      "id": "1771988224362_3285",
+      "name": "Unknown",
+      "timestamp": "2026-02-25T09:57:04.362899",
+      "violations_detail": {
+        "is_mask": true,
+        "is_glove": false,
+        "is_helm": false,
+        "is_glasses": false,
+        "is_boots": false
+      },
+      "path_image": "violations/2026-02-25/Unknown_20260225_095704.jpg"
+    }
+  ]
+}

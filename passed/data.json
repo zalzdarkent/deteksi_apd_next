@@ -1,0 +1,31 @@
+{
+  "passed_count": 2,
+  "records": [
+    {
+      "id": "1771987651064_5022",
+      "name": "Unknown",
+      "timestamp": "2026-02-25T09:47:31.064601",
+      "compliant_detail": {
+        "is_mask": true,
+        "is_glove": null,
+        "is_helm": null,
+        "is_glasses": null,
+        "is_boots": null
+      },
+      "path_image": "passed/2026-02-25/Unknown_20260225_094731.jpg"
+    },
+    {
+      "id": "1771988111671_4941",
+      "name": "Unknown",
+      "timestamp": "2026-02-25T09:55:11.671727",
+      "compliant_detail": {
+        "is_mask": true,
+        "is_glove": null,
+        "is_helm": null,
+        "is_glasses": null,
+        "is_boots": null
+      },
+      "path_image": "passed/2026-02-25/Unknown_20260225_095511.jpg"
+    }
+  ]
+}

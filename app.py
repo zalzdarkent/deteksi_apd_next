@@ -283,9 +283,8 @@ def get_today_violation_dir():
     return violation_dir
 
 def load_violation_data():
-    """Load violation data from JSON for today"""
-    violation_dir = get_today_violation_dir()
-    data_file = violation_dir / "data.json"
+    """Load violation data from JSON"""
+    data_file = VIOLATIONS_DIR / "data.json"
     
     if data_file.exists():
         try:
@@ -301,9 +300,8 @@ def load_violation_data():
     }
 
 def save_violation_data(violation_data):
-    """Save violation data to JSON for today"""
-    violation_dir = get_today_violation_dir()
-    data_file = violation_dir / "data.json"
+    """Save violation data to JSON"""
+    data_file = VIOLATIONS_DIR / "data.json"
     
     try:
         with open(data_file, 'w') as f:
@@ -389,9 +387,8 @@ def get_today_passed_dir():
     return passed_dir
 
 def load_passed_data():
-    """Load passed data from JSON for today"""
-    passed_dir = get_today_passed_dir()
-    data_file = passed_dir / "data.json"
+    """Load passed data from JSON"""
+    data_file = PASSED_DIR / "data.json"
     
     if data_file.exists():
         try:
@@ -407,9 +404,8 @@ def load_passed_data():
     }
 
 def save_passed_data(passed_data):
-    """Save passed data to JSON for today"""
-    passed_dir = get_today_passed_dir()
-    data_file = passed_dir / "data.json"
+    """Save passed data to JSON"""
+    data_file = PASSED_DIR / "data.json"
     
     try:
         with open(data_file, 'w') as f:
