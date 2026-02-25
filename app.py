@@ -29,7 +29,7 @@ VIOLATIONS_DIR.mkdir(exist_ok=True)
 PASSED_DIR.mkdir(exist_ok=True)
 
 # YOLO Models
-yolo_model = YOLO('model/yolo8n/best.pt')
+yolo_model = YOLO('model/yolo8_retrain/best.pt')
 
 # Face Detection
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
