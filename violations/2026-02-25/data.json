@@ -1,0 +1,18 @@
+{
+  "violation_count": 1,
+  "violations": [
+    {
+      "id": "1771986664316_3096",
+      "name": "Unknown",
+      "timestamp": "2026-02-25T09:31:04.316705",
+      "violations_detail": {
+        "is_mask": false,
+        "is_glove": null,
+        "is_helm": null,
+        "is_glasses": null,
+        "is_boots": null
+      },
+      "path_image": "violations/2026-02-25/Unknown_20260225_093104.jpg"
+    }
+  ]
+}

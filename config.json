@@ -1,0 +1,9 @@
+{
+  "custom": {
+    "mask": true,
+    "glove": false,
+    "helm": false,
+    "glasses": false,
+    "boots": false
+  }
+}
