@@ -5,7 +5,7 @@ from pathlib import Path
 from ultralytics import YOLO
 import json
 from datetime import datetime
-from PIL import Image
+from PIL import Image, ImageOps
 import tempfile
 import os
 import gspread
@@ -24,7 +24,6 @@ PASSED_DIR = Path("passed")
 GOOGLE_SHEET_NAME = "deteksi-apd"
 CREDENTIALS_FILE = "credentials.json"
 
-# Ensure directories exist
 DATA_DIR.mkdir(exist_ok=True)
 RECORDS_DIR.mkdir(exist_ok=True)
 VIOLATIONS_DIR.mkdir(exist_ok=True)
@@ -35,7 +34,7 @@ PASSED_DIR.mkdir(exist_ok=True)
 # ====================
 st.set_page_config(
     page_title="APD Detection System",
-    page_icon="🔒",
+    page_icon=":material/security:",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -45,21 +44,19 @@ st.set_page_config(
 # ====================
 
 def load_config():
-    """Load custom configuration from config.json"""
     try:
         if Path(CONFIG_FILE).exists():
             with open(CONFIG_FILE, 'r') as f:
                 config = json.load(f)
                 return config.get("areas", {})
     except Exception as e:
-        st.warning(f"⚠️ Error loading config.json: {e}")
+        st.warning(f"Error loading configuration: {e}")
     return {}
 
 
 
 
 def get_google_sheet():
-    """Connect ke Google Sheet menggunakan service account"""
     try:
         scopes = [
             'https://www.googleapis.com/auth/spreadsheets',
@@ -71,49 +68,40 @@ def get_google_sheet():
         creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=scopes)
         gc = gspread.authorize(creds)
         sh = gc.open(GOOGLE_SHEET_NAME)
-        return sh.sheet1  # Return first worksheet
+        return sh.sheet1
     except Exception as e:
         return None
 
 
 def save_check_record(name, results_dict, area, last_state, last_save_time, debounce_seconds=2):
-    """Save APD check result to Google Sheet only if ANY state changed AND debounce time passed"""
     state_key = f"{name}_{area}"
     time_key = f"{state_key}_time"
     current_time = time.time()
     
-    # Create state string for comparison
     current_state = json.dumps(results_dict, sort_keys=True)
     
-    # Check if state is same as last time
     if current_state == last_state.get(state_key):
         return False
     
-    # Check if enough time has passed since last save (debounce)
     last_save = last_save_time.get(time_key, 0)
     if current_time - last_save < debounce_seconds:
         return False
     
-    # Get Google Sheet
     worksheet = get_google_sheet()
     if worksheet is None:
         return False
     
     try:
-        # Prepare record: Area, Name, Mask, Glove, Helm, Glasses, Boots, Timestamp
         row_data = [area, name]
         
-        # Add all category values in order: mask, glove, helm, glasses, boots
         for cat in ["mask", "glove", "helm", "glasses", "boots"]:
             row_data.append(results_dict.get(f"is_{cat}", False))
         
         timestamp = datetime.now().isoformat()
         row_data.append(timestamp)
         
-        # Insert row at top (row 2, right after header)
         worksheet.insert_row(row_data, index=2)
         
-        # Update last state and time
         last_state[state_key] = current_state
         last_save_time[time_key] = current_time
         
@@ -123,7 +111,6 @@ def save_check_record(name, results_dict, area, last_state, last_save_time, debo
 
 
 def get_today_violation_dir():
-    """Get or create violation directory for today"""
     today = datetime.now().strftime("%Y-%m-%d")
     violation_dir = VIOLATIONS_DIR / today
     violation_dir.mkdir(parents=True, exist_ok=True)
@@ -131,7 +118,6 @@ def get_today_violation_dir():
 
 
 def load_violation_data():
-    """Load violation data from JSON"""
     data_file = VIOLATIONS_DIR / "data.json"
     
     if data_file.exists():
@@ -148,7 +134,6 @@ def load_violation_data():
 
 
 def save_violation_data(violation_data):
-    """Save violation data to JSON"""
     data_file = VIOLATIONS_DIR / "data.json"
     
     try:
@@ -160,30 +145,23 @@ def save_violation_data(violation_data):
 
 
 def save_violation_record(frame, name, results_dict, enabled_categories, last_violation_state):
-    """Save violation record with screenshot if any APD category is False"""
-    # Check if there's any violation (any False value in enabled categories)
     has_violation = any(not results_dict.get(f"is_{cat}") if cat in enabled_categories else False 
                        for cat in ["mask", "glove", "helm", "glasses", "boots"])
     
     if not has_violation:
         return False
     
-    # Create unique key for this person's current violation state
     violation_key = f"{name}_{json.dumps(results_dict, sort_keys=True)}"
     
-    # Check if this exact violation was already recorded (avoid duplicate screenshots)
     if violation_key in last_violation_state:
         return False
     
-    # Load current violation data
     violation_data = load_violation_data()
     
-    # Generate unique ID
     timestamp_ms = int(time.time() * 1000)
     random_id = random.randint(1000, 9999)
     unique_id = f"{timestamp_ms}_{random_id}"
     
-    # Create violation record with null for disabled categories
     violation_detail = {}
     for cat in ["mask", "glove", "helm", "glasses", "boots"]:
         if cat in enabled_categories:
@@ -191,7 +169,6 @@ def save_violation_record(frame, name, results_dict, enabled_categories, last_vi
         else:
             violation_detail[f"is_{cat}"] = None
     
-    # Create violation record
     violation_record = {
         "id": unique_id,
         "name": name,
@@ -201,7 +178,6 @@ def save_violation_record(frame, name, results_dict, enabled_categories, last_vi
         "path_image": f"violations/{datetime.now().strftime('%Y-%m-%d')}/{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
     }
     
-    # Save screenshot
     violation_dir = get_today_violation_dir()
     img_filename = f"{name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
     img_path = violation_dir / img_filename
@@ -209,14 +185,12 @@ def save_violation_record(frame, name, results_dict, enabled_categories, last_vi
     try:
         cv2.imwrite(str(img_path), frame)
         
-        # Add to violation data
         violation_data["violations"].append(violation_record)
         violation_data["violation_count"] += 1
         
-        # Save violation data
         save_violation_data(violation_data)
         
-        # Mark this violation state as recorded
+        last_violation_state[violation_key] = True
         last_violation_state[violation_key] = True
         
         return True
@@ -233,7 +207,6 @@ def get_today_passed_dir():
 
 
 def load_passed_data():
-    """Load passed data from JSON"""
     data_file = PASSED_DIR / "data.json"
     
     if data_file.exists():
@@ -250,7 +223,6 @@ def load_passed_data():
 
 
 def save_passed_data(passed_data):
-    """Save passed data to JSON"""
     data_file = PASSED_DIR / "data.json"
     
     try:
@@ -262,23 +234,18 @@ def save_passed_data(passed_data):
 
 
 def save_passed_record(frame, name, results_dict, enabled_categories, last_passed_state):
-    """Save passed record (no violations) with screenshot if all APD categories pass"""
-    # Check if there's any violation (any False value in enabled categories)
     has_violation = any(not results_dict.get(f"is_{cat}") if cat in enabled_categories else False 
                        for cat in ["mask", "glove", "helm", "glasses", "boots"])
     
     if has_violation:
         return False
     
-    # Create unique key for this person's current passed state
     passed_key = f"{name}_{json.dumps(results_dict, sort_keys=True)}"
     
-    # Check if this exact passed state was already recorded (avoid duplicate screenshots)
     if passed_key in last_passed_state:
         return False
     
-    # Load current passed data
-    passed_data = load_passed_data()
+        passed_data = load_passed_data()
     
     # Generate unique ID
     timestamp_ms = int(time.time() * 1000)
@@ -357,7 +324,7 @@ def draw_apd_status(frame, results_dict, enabled_categories):
         if cat in enabled_categories:
             is_compliant = results_dict.get(f"is_{cat}")
             if is_compliant is not None:  # Not null
-                status = "OK" if is_compliant else "❌"
+                status = "OK" if is_compliant else "MISSING"
                 status_full = f"{cat.upper()}: {status}"
                 status_text.append((status_full, is_compliant))
     
@@ -453,6 +420,15 @@ def process_detections(frame, results, yolo_model, categories, area="Unknown",
         
         if not matched_category:
             continue
+            
+        # Refinement: Category-specific confidence boosts/thresholds
+        # Increase threshold for glasses to avoid background 'hallucinations'
+        internal_threshold = 0.0
+        if matched_category == "glasses":
+            internal_threshold = 0.45  # Higher threshold for glasses specifically
+            
+        if conf < internal_threshold:
+            continue
         
         # Keep only highest confidence result per category
         if matched_category not in best_conf or conf > best_conf[matched_category]:
@@ -515,13 +491,28 @@ def process_detections(frame, results, yolo_model, categories, area="Unknown",
 
 def process_image(image, yolo_model, categories, area, confidence_threshold):
     """Process image and return results"""
-    # Convert to BGR for OpenCV
+    # Fix orientation if image has EXIF rotation
+    image = ImageOps.exif_transpose(image)
+    
+    # Ensure image is in RGB (handles PNG with alpha channel)
+    image = image.convert("RGB")
+    
+    # Standardize dimension to improve detection on very high-res photos
+    # The 'sweet spot' found by user is around 1000px
+    max_dim = 1024
+    w, h = image.size
+    if max(w, h) > max_dim:
+        scale = max_dim / max(w, h)
+        new_w, new_h = int(w * scale), int(h * scale)
+        image = image.resize((new_w, new_h), Image.LANCZOS)
+    
+    # Convert to BGR for OpenCV drawing (on the standardized size)
     frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
     
     # Run YOLO inference
-    results = yolo_model(frame, conf=confidence_threshold)[0]
+    results = yolo_model(image, conf=confidence_threshold)[0]
     
-    # Process detections
+    # Process detections using the BGR frame for drawing
     annotated_frame, results_dict, detection_details, person_name = process_detections(
         frame, results, yolo_model, categories, area=area
     )
@@ -532,11 +523,10 @@ def process_image(image, yolo_model, categories, area, confidence_threshold):
     return annotated_frame_rgb, results_dict, detection_details, person_name
 
 
-def process_video(video_path, yolo_model, categories, area, confidence_threshold):
-    """Process video and return results"""
+def process_video(video_path, yolo_model, categories, area, confidence_threshold, placeholder=None):
+    """Process video and return results with real-time streaming"""
     cap = cv2.VideoCapture(video_path)
     
-    frames_processed = []
     all_results = []
     frame_count = 0
     
@@ -547,9 +537,6 @@ def process_video(video_path, yolo_model, categories, area, confidence_threshold
     last_passed_state = {}
     
     # Get video properties
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     
     progress_bar = st.progress(0)
@@ -562,6 +549,13 @@ def process_video(video_path, yolo_model, categories, area, confidence_threshold
         
         frame_count += 1
         
+        # Standardize resolution for stability if video is very high-res
+        max_dim = 1024
+        h, w = frame.shape[:2]
+        if max(h, w) > max_dim:
+            scale = max_dim / max(h, w)
+            frame = cv2.resize(frame, (int(w * scale), int(h * scale)))
+            
         # Run YOLO inference
         results = yolo_model(frame, conf=confidence_threshold)[0]
         
@@ -572,9 +566,12 @@ def process_video(video_path, yolo_model, categories, area, confidence_threshold
             last_violation_state=last_violation_state, last_passed_state=last_passed_state
         )
         
-        # Convert to RGB
+        # Convert to RGB for streaming
         annotated_frame_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-        frames_processed.append(annotated_frame_rgb)
+        
+        # Update streaming placeholder
+        if placeholder:
+            placeholder.image(annotated_frame_rgb, width='stretch')
         
         # Store results with frame number
         all_results.append({
@@ -585,35 +582,56 @@ def process_video(video_path, yolo_model, categories, area, confidence_threshold
         })
         
         # Update progress
-        if frame_count % 5 == 0 or frame_count == total_frames:
+        if frame_count % 10 == 0 or frame_count == total_frames:
             progress = frame_count / total_frames
             progress_bar.progress(progress)
-            status_text.text(f"Processing... {frame_count}/{total_frames} frames")
+            status_text.text(f"Processing & Streaming... {frame_count}/{total_frames} frames")
     
     cap.release()
-    
     progress_bar.empty()
     status_text.empty()
     
-    return frames_processed, all_results
+    return all_results
 
 
 # ====================
 # SIDEBAR CONFIGURATION
 # ====================
 with st.sidebar:
-    st.header("⚙️ Configuration")
+    st.header("Configuration")
     
+    # Navigation Menu
+    st.divider()
+    st.subheader("Navigation")
+    app_mode = st.radio(
+        "Detection Mode",
+        ["Live Detection", "Image Detection", "Video Detection"]
+    )
+
     # Area selection
-    st.subheader("Select Detection Area")
+    st.divider()
+    st.subheader("Detection Area")
     areas_config = load_config()
     area_names = list(areas_config.keys()) if areas_config else ["Default"]
     
     selected_area = st.selectbox(
-        "Location/Area",
+        "Location",
         options=area_names,
         index=0
     )
+    
+    # CCTV Source (Only for Live Detection)
+    camera_source = 0
+    if app_mode == "Live Detection":
+        st.divider()
+        st.subheader("CCTV Source")
+        source_input = st.text_input("Camera Index or RTSP URL", value="0")
+        try:
+            camera_source = int(source_input)
+        except ValueError:
+            camera_source = source_input
+            
+        is_running = st.toggle("Start Detection", value=False)
     
     # Category selection based on area
     st.subheader("APD Categories to Detect")
@@ -623,19 +641,19 @@ with st.sidebar:
     })
     
     categories = []
-    if st.checkbox("👷 Mask", value=current_area_config.get("mask", True), key=f"cb_mask_{selected_area}"):
+    if st.checkbox("Mask", value=current_area_config.get("mask", True), key=f"cb_mask_{selected_area}"):
         categories.append("mask")
-    if st.checkbox("🧤 Glove", value=current_area_config.get("glove", True), key=f"cb_glove_{selected_area}"):
+    if st.checkbox("Glove", value=current_area_config.get("glove", True), key=f"cb_glove_{selected_area}"):
         categories.append("glove")
-    if st.checkbox("🪖 Helm", value=current_area_config.get("helm", True), key=f"cb_helm_{selected_area}"):
+    if st.checkbox("Helm", value=current_area_config.get("helm", True), key=f"cb_helm_{selected_area}"):
         categories.append("helm")
-    if st.checkbox("👓 Glasses", value=current_area_config.get("glasses", True), key=f"cb_glasses_{selected_area}"):
+    if st.checkbox("Glasses", value=current_area_config.get("glasses", True), key=f"cb_glasses_{selected_area}"):
         categories.append("glasses")
-    if st.checkbox("👢 Boots", value=current_area_config.get("boots", True), key=f"cb_boots_{selected_area}"):
+    if st.checkbox("Boots", value=current_area_config.get("boots", True), key=f"cb_boots_{selected_area}"):
         categories.append("boots")
     
     if not categories:
-        st.warning("⚠️ Please select at least 1 category!")
+        st.warning("Please select at least one category for detection.")
         st.stop()
     
     # Confidence threshold
@@ -650,8 +668,8 @@ with st.sidebar:
     )
     
     st.divider()
-    st.info(f"📍 Area: {selected_area}")
-    st.info(f"✓ Checking: {', '.join([cat.upper() for cat in categories])}")
+    st.info(f"Location: {selected_area}")
+    st.info(f"Monitoring: {', '.join([cat.upper() for cat in categories])}")
 
 
 # ====================
@@ -673,8 +691,8 @@ yolo_model = load_yolo_model()
 # ====================
 # MAIN UI
 # ====================
-st.title("🔒 APD Detection System")
-st.write("Sistem Deteksi APD Lengkap dengan Pengenalan Wajah dan Pencatatan Otomatis")
+st.markdown("<h1 style='text-align: center;'>APD Detection System</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: gray;'>Advanced Safety Monitoring with Real-time Detection and Logging</p>", unsafe_allow_html=True)
 
 # Initialize session state for tracking
 if 'last_state' not in st.session_state: st.session_state.last_state = {}
@@ -682,53 +700,56 @@ if 'last_save_time' not in st.session_state: st.session_state.last_save_time = {
 if 'last_violation_state' not in st.session_state: st.session_state.last_violation_state = {}
 if 'last_passed_state' not in st.session_state: st.session_state.last_passed_state = {}
 
-# Create tabs
-tab_live, tab_image, tab_video = st.tabs([
-    "📹 Live Detection", 
-    "📷 Image Detection", 
-    "🎬 Video Detection"
-])
-
-
 # ====================
-# LIVE DETECTION TAB
+# LIVE DETECTION
 # ====================
-with tab_live:
-    st.subheader("Live APD Check")
+if app_mode == "Live Detection":
+    st.subheader("Real-time CCTV Detection")
     
-    live_image = st.camera_input("Take a picture for real-time check")
-    
-    if live_image:
-        img = Image.open(live_image)
+    if is_running:
+        cap = cv2.VideoCapture(camera_source)
+        st_frame = st.empty()
         
-        # Process image
-        with st.spinner("🔄 Analyzing..."):
-            annotated_image, results_dict, detection_details, person_name = process_image(
-                img, yolo_model, categories, selected_area, confidence_threshold
-            )
+        # UI for stopping within the main area
+        stop_btn = st.button("Stop Stream", type="primary")
         
-        col1, col2 = st.columns([2, 1])
-        
-        with col1:
-            st.image(annotated_image, use_column_width=True)
-        
-        with col2:
-            st.write("**Compliance Status**")
-            for cat in categories:
-                status = results_dict.get(f"is_{cat}", False)
-                st.write(f"{'✅' if status else '❌'} {cat.upper()}")
+        while cap.isOpened() and not stop_btn:
+            ret, frame = cap.read()
+            if not ret:
+                st.error("Failed to connect to camera source.")
+                break
             
-            st.divider()
-            if any(not results_dict.get(f"is_{cat}") for cat in categories):
-                st.error("⚠️ VIOLATION DETECTED")
-            else:
-                st.success("✅ ALL APD COMPLIANT")
+            # Run inference
+            results = yolo_model(frame, conf=confidence_threshold, imgsz=640)[0]
+            
+            # Process detections
+            annotated_frame, results_dict, detection_details, person_name = process_detections(
+                frame, results, yolo_model, categories, area=selected_area,
+                last_state=st.session_state.last_state,
+                last_save_time=st.session_state.last_save_time,
+                last_violation_state=st.session_state.last_violation_state,
+                last_passed_state=st.session_state.last_passed_state
+            )
+            
+            # Convert to RGB
+            annotated_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+            
+            # Stream to UI
+            st_frame.image(annotated_rgb, width='stretch')
+            
+            # Small delay to reduce CPU usage if needed
+            # time.sleep(0.01)
+            
+        cap.release()
+        st.info("Stream stopped.")
+    else:
+        st.info("Please toggle 'Start Detection' in the sidebar to begin CCTV monitoring.")
 
 
 # ====================
-# IMAGE TAB
+# IMAGE DETECTION
 # ====================
-with tab_image:
+elif app_mode == "📷 Image Detection":
     st.subheader("Upload Image")
     
     uploaded_image = st.file_uploader(
@@ -744,7 +765,7 @@ with tab_image:
         
         with col1:
             st.write("**Original Image**")
-            st.image(image, use_column_width=True)
+            st.image(image, width='stretch')
         
         with col2:
             st.write("**Detection Results**")
@@ -755,7 +776,7 @@ with tab_image:
                     image, yolo_model, categories, selected_area, confidence_threshold
                 )
             
-            st.image(annotated_image, use_column_width=True)
+            st.image(annotated_image, width='stretch')
         
         # Display results
         st.divider()
@@ -775,7 +796,7 @@ with tab_image:
         
         st.dataframe(
             summary_data,
-            use_container_width=True,
+            width='stretch',
             hide_index=True,
             column_config={
                 "Category": st.column_config.TextColumn(width="medium"),
@@ -799,7 +820,7 @@ with tab_image:
             
             st.dataframe(
                 details_data,
-                use_container_width=True,
+                width='stretch',
                 hide_index=True
             )
         else:
@@ -807,9 +828,9 @@ with tab_image:
 
 
 # ====================
-# VIDEO TAB
+# VIDEO DETECTION
 # ====================
-with tab_video:
+else: # 🎬 Video Detection
     st.subheader("Upload Video")
     
     uploaded_video = st.file_uploader(
@@ -824,89 +845,48 @@ with tab_video:
             video_path = tmp_file.name
         
         try:
-            # Process video
-            with st.spinner("🔄 Processing video... This may take a while"):
-                frames_processed, all_results = process_video(
-                    video_path, yolo_model, categories, selected_area, confidence_threshold
+            # Create placeholders for streaming
+            video_placeholder = st.empty()
+            
+            # Process video with real-time streaming
+            with st.spinner("� Processing & Streaming video..."):
+                all_results = process_video(
+                    video_path, yolo_model, categories, selected_area, 
+                    confidence_threshold, placeholder=video_placeholder
                 )
             
-            st.success(f"✅ Video processed! {len(frames_processed)} frames detected")
+            st.success(f"✅ Video processed! {len(all_results)} frames analyzed")
             
-            # Display frame by frame or summary
-            col_play, col_summary = st.columns([2, 1])
-            
-            with col_play:
-                st.subheader("📹 Processed Video Preview")
+            # Show summary of violations found
+            with st.expander("� Detailed Statistics", expanded=True):
+                # Analyze all frames
+                total_frames = len(all_results)
+                compliance_by_category = {cat: [] for cat in categories}
                 
-                # Frame slider
-                frame_idx = st.slider(
-                    "Select frame to view",
-                    min_value=0,
-                    max_value=len(frames_processed) - 1,
-                    step=1
-                )
+                for frame_result in all_results:
+                    for cat in categories:
+                        compliance_by_category[cat].append(
+                            frame_result["results"].get(f"is_{cat}", False)
+                        )
                 
-                # Display selected frame
-                st.image(frames_processed[frame_idx], use_column_width=True)
-                
-                # Frame info
-                current_result = all_results[frame_idx]
-                st.write(f"**Frame {current_result['frame']}**")
-            
-            with col_summary:
-                st.subheader("📊 Frame Results")
-                
-                # Current frame summary
-                results_dict = current_result["results"]
-                summary_data = []
-                
-                for cat in ["mask", "glove", "helm", "glasses", "boots"]:
-                    if cat in categories:
-                        status = results_dict.get(f"is_{cat}", False)
-                        status_text = "✅" if status else "❌"
-                        summary_data.append({
-                            "Category": cat.upper(),
-                            "Status": status_text
-                        })
+                # Create statistics table
+                stats_data = []
+                for cat in categories:
+                    compliant_frames = sum(compliance_by_category[cat])
+                    compliance_rate = (compliant_frames / total_frames * 100) if total_frames > 0 else 0
+                    
+                    stats_data.append({
+                        "Category": cat.upper(),
+                        "Compliant Frames": f"{compliant_frames}/{total_frames}",
+                        "Compliance Rate": f"{compliance_rate:.1f}%",
+                        "Status": "✅ GOOD" if compliance_rate >= 80 else "⚠️ NEEDS ATTENTION"
+                    })
                 
                 st.dataframe(
-                    summary_data,
-                    use_container_width=True,
+                    stats_data,
+                    width='stretch',
                     hide_index=True
                 )
-            
-            # Video statistics
-            st.divider()
-            st.subheader("📈 Video Statistics")
-            
-            # Analyze all frames
-            total_frames = len(all_results)
-            compliance_by_category = {cat: [] for cat in categories}
-            
-            for frame_result in all_results:
-                for cat in categories:
-                    compliance_by_category[cat].append(
-                        frame_result["results"].get(f"is_{cat}", False)
-                    )
-            
-            # Create statistics table
-            stats_data = []
-            for cat in categories:
-                compliant_frames = sum(compliance_by_category[cat])
-                compliance_rate = (compliant_frames / total_frames * 100) if total_frames > 0 else 0
-                
-                stats_data.append({
-                    "Category": cat.upper(),
-                    "Compliant Frames": f"{compliant_frames}/{total_frames}",
-                    "Compliance Rate": f"{compliance_rate:.1f}%",
-                    "Status": "✅ GOOD" if compliance_rate >= 80 else "⚠️ NEEDS ATTENTION"
-                })
-            
-            st.dataframe(
-                stats_data,
-                use_container_width=True,
-                hide_index=True
-            )
         
         finally:
             # Cleanup temporary file
