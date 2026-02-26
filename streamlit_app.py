@@ -191,7 +191,6 @@ def save_violation_record(frame, name, results_dict, enabled_categories, last_vi
         save_violation_data(violation_data)
         
         last_violation_state[violation_key] = True
-        last_violation_state[violation_key] = True
         
         return True
     except Exception as e:
@@ -217,8 +216,8 @@ def load_passed_data():
             pass
     
     return {
-        "passed_count": 0,
-        "records": []
+        "total_passed": 0,
+        "passed": []
     }
 
 
@@ -245,7 +244,7 @@ def save_passed_record(frame, name, results_dict, enabled_categories, last_passe
     if passed_key in last_passed_state:
         return False
     
-        passed_data = load_passed_data()
+    passed_data = load_passed_data()
     
     # Generate unique ID
     timestamp_ms = int(time.time() * 1000)
@@ -279,8 +278,8 @@ def save_passed_record(frame, name, results_dict, enabled_categories, last_passe
         cv2.imwrite(str(img_path), frame)
         
         # Add to passed data
-        passed_data["records"].append(passed_record)
-        passed_data["passed_count"] += 1
+        passed_data["passed"].append(passed_record)
+        passed_data["total_passed"] += 1
         
         # Save passed data
         save_passed_data(passed_data)
@@ -514,7 +513,11 @@ def process_image(image, yolo_model, categories, area, confidence_threshold):
     
     # Process detections using the BGR frame for drawing
     annotated_frame, results_dict, detection_details, person_name = process_detections(
-        frame, results, yolo_model, categories, area=area
+        frame, results, yolo_model, categories, area=area,
+        last_state=st.session_state.last_state,
+        last_save_time=st.session_state.last_save_time,
+        last_violation_state=st.session_state.last_violation_state,
+        last_passed_state=st.session_state.last_passed_state
     )
     
     # Convert back to RGB for display
@@ -598,59 +601,75 @@ def process_video(video_path, yolo_model, categories, area, confidence_threshold
 # SIDEBAR CONFIGURATION
 # ====================
 with st.sidebar:
-    st.header("Configuration")
+    st.header("Control Panel")
     
-    # Navigation Menu
+    # Professional Navigation Menu
     st.divider()
-    st.subheader("Navigation")
-    app_mode = st.radio(
-        "Detection Mode",
-        ["Live Detection", "Image Detection", "Video Detection"]
+    st.markdown("### Navigation")
+    
+    # Map display names to internal modes
+    menu_options = {
+        "Live Monitoring": "Live Detection",
+        "Image Analysis": "Image Detection", 
+        "Video Analytics": "Video Detection",
+        "Security Records": "Security Records"
+    }
+    
+    # Use material icons for a modern website look
+    app_mode_display = st.radio(
+        "Select Mode",
+        options=list(menu_options.keys()),
+        label_visibility="collapsed",
+        captions=[":material/videocam:", ":material/image:", ":material/movie:", ":material/history:"]
     )
+    app_mode = menu_options[app_mode_display]
 
-    # Area selection
+    # Placement & Source Settings
     st.divider()
-    st.subheader("Detection Area")
+    st.markdown("### Placement Settings")
     areas_config = load_config()
     area_names = list(areas_config.keys()) if areas_config else ["Default"]
     
     selected_area = st.selectbox(
-        "Location",
+        "Detection Location",
         options=area_names,
         index=0
     )
     
-    # CCTV Source (Only for Live Detection)
+    # CCTV Source (Only for Live Monitoring)
     camera_source = 0
     if app_mode == "Live Detection":
-        st.divider()
-        st.subheader("CCTV Source")
-        source_input = st.text_input("Camera Index or RTSP URL", value="0")
+        st.markdown("#### Source Configuration")
+        source_input = st.text_input("Camera Index or RTSP URL", value="0", help="Use '0' for default webcam or enter RTSP link for CCTV")
         try:
             camera_source = int(source_input)
         except ValueError:
             camera_source = source_input
             
-        is_running = st.toggle("Start Detection", value=False)
+        is_running = st.toggle("Activate Live Detection", value=False)
     
-    # Category selection based on area
-    st.subheader("APD Categories to Detect")
+    # Category configuration
+    st.divider()
+    st.markdown("### APD Categories")
     # Get configuration for selected area
     current_area_config = areas_config.get(selected_area, {
         "mask": True, "glove": True, "helm": True, "glasses": True, "boots": True
     })
     
     categories = []
-    if st.checkbox("Mask", value=current_area_config.get("mask", True), key=f"cb_mask_{selected_area}"):
-        categories.append("mask")
-    if st.checkbox("Glove", value=current_area_config.get("glove", True), key=f"cb_glove_{selected_area}"):
-        categories.append("glove")
-    if st.checkbox("Helm", value=current_area_config.get("helm", True), key=f"cb_helm_{selected_area}"):
-        categories.append("helm")
-    if st.checkbox("Glasses", value=current_area_config.get("glasses", True), key=f"cb_glasses_{selected_area}"):
-        categories.append("glasses")
-    if st.checkbox("Boots", value=current_area_config.get("boots", True), key=f"cb_boots_{selected_area}"):
-        categories.append("boots")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.checkbox("Mask", value=current_area_config.get("mask", True), key=f"cb_mask_{selected_area}"):
+            categories.append("mask")
+        if st.checkbox("Glove", value=current_area_config.get("glove", True), key=f"cb_glove_{selected_area}"):
+            categories.append("glove")
+        if st.checkbox("Helm", value=current_area_config.get("helm", True), key=f"cb_helm_{selected_area}"):
+            categories.append("helm")
+    with col2:
+        if st.checkbox("Glasses", value=current_area_config.get("glasses", True), key=f"cb_glasses_{selected_area}"):
+            categories.append("glasses")
+        if st.checkbox("Boots", value=current_area_config.get("boots", True), key=f"cb_boots_{selected_area}"):
+            categories.append("boots")
     
     if not categories:
         st.warning("Please select at least one category for detection.")
@@ -749,8 +768,8 @@ if app_mode == "Live Detection":
 # ====================
 # IMAGE DETECTION
 # ====================
-elif app_mode == "📷 Image Detection":
-    st.subheader("Upload Image")
+elif app_mode == "Image Detection":
+    st.subheader("Image Analysis")
     
     uploaded_image = st.file_uploader(
         "Choose an image file",
@@ -771,7 +790,7 @@ elif app_mode == "📷 Image Detection":
             st.write("**Detection Results**")
             
             # Process image
-            with st.spinner("🔄 Processing image..."):
+            with st.spinner("Processing image..."):
                 annotated_image, results_dict, detection_details, person_name = process_image(
                     image, yolo_model, categories, selected_area, confidence_threshold
                 )
@@ -828,10 +847,99 @@ elif app_mode == "📷 Image Detection":
 
 
 # ====================
+# SECURITY RECORDS
+# ====================
+elif app_mode == "Security Records": # Security Records
+    st.subheader("Security Audit Records")
+    
+    tab_violations, tab_passed = st.tabs(["Violation History", "Passed History"])
+    
+    with tab_violations:
+        violation_data = load_violation_data()
+        records = violation_data.get("violations", [])
+        
+        if not records:
+            st.info("No violation records found.")
+        else:
+            # Sort by timestamp descending
+            records = sorted(records, key=lambda x: x.get('timestamp', ''), reverse=True)
+            
+            for rec in records:
+                # Format timestamp for better readability
+                try:
+                    dt_obj = datetime.fromisoformat(rec['timestamp'])
+                    formatted_time = dt_obj.strftime("%d %b %Y, %H:%M:%S")
+                except:
+                    formatted_time = rec['timestamp']
+                    
+                with st.expander(f"Violation: {rec['area']} | {formatted_time}"):
+                    col_info, col_img = st.columns([1, 2])
+                    with col_info:
+                        st.markdown("#### Violation Details")
+                        # Fix key from 'details' to 'violations_detail'
+                        details = rec.get("violations_detail", {})
+                        
+                        violations_found = []
+                        for cat, status in details.items():
+                            category_name = cat.replace("is_", "").upper()
+                            if status is False:
+                                st.error(f"MISSING: {category_name}")
+                                violations_found.append(category_name)
+                            elif status is True:
+                                st.success(f"OK: {category_name}")
+                        
+                        if not violations_found:
+                            st.warning("No specific categories recorded as missing.")
+                            
+                        st.divider()
+                        st.caption(f"ID: {rec['id']}")
+                        st.caption(f"Name: {rec['name']}")
+                    
+                    with col_img:
+                        img_path = Path("") / rec['path_image']
+                        if img_path.exists():
+                            st.image(str(img_path), use_container_width=True)
+                        else:
+                            st.error(f"Image not found at: {img_path}")
+                            
+    with tab_passed:
+        passed_data = load_passed_data()
+        records = passed_data.get("passed", [])
+        
+        if not records:
+            st.info("No passed records found.")
+        else:
+            # Sort by timestamp descending
+            records = sorted(records, key=lambda x: x.get('timestamp', ''), reverse=True)
+            
+            for rec in records:
+                try:
+                    dt_obj = datetime.fromisoformat(rec['timestamp'])
+                    formatted_time = dt_obj.strftime("%d %b %Y, %H:%M:%S")
+                except:
+                    formatted_time = rec['timestamp']
+                    
+                with st.expander(f"Passed: {rec['area']} | {formatted_time}"):
+                    col_info, col_img = st.columns([1, 2])
+                    with col_info:
+                        st.success("All APD Compliant")
+                        st.divider()
+                        st.caption(f"ID: {rec['id']}")
+                        st.caption(f"Name: {rec['name']}")
+                    
+                    with col_img:
+                        img_path = Path("") / rec['path_image']
+                        if img_path.exists():
+                            st.image(str(img_path), use_container_width=True)
+                        else:
+                            st.error(f"Image not found at: {img_path}")
+
+
+# ====================
 # VIDEO DETECTION
 # ====================
-else: # 🎬 Video Detection
-    st.subheader("Upload Video")
+elif app_mode == "Video Detection":
+    st.subheader("Video Analytics")
     
     uploaded_video = st.file_uploader(
         "Choose a video file",
@@ -849,7 +957,7 @@ else: # 🎬 Video Detection
             video_placeholder = st.empty()
             
             # Process video with real-time streaming
-            with st.spinner("� Processing & Streaming video..."):
+            with st.spinner(" Processing & Streaming video..."):
                 all_results = process_video(
                     video_path, yolo_model, categories, selected_area, 
                     confidence_threshold, placeholder=video_placeholder
@@ -858,7 +966,7 @@ else: # 🎬 Video Detection
             st.success(f"✅ Video processed! {len(all_results)} frames analyzed")
             
             # Show summary of violations found
-            with st.expander("� Detailed Statistics", expanded=True):
+            with st.expander("Detailed Statistics", expanded=True):
                 # Analyze all frames
                 total_frames = len(all_results)
                 compliance_by_category = {cat: [] for cat in categories}
