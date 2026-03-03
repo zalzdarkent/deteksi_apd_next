@@ -53,9 +53,6 @@ def load_config():
         st.warning(f"Error loading configuration: {e}")
     return {}
 
-
-
-
 def get_google_sheet():
     try:
         scopes = [
@@ -71,7 +68,6 @@ def get_google_sheet():
         return sh.sheet1
     except Exception as e:
         return None
-
 
 def save_check_record(name, results_dict, area, last_state, last_save_time, debounce_seconds=2):
     state_key = f"{name}_{area}"
@@ -109,13 +105,11 @@ def save_check_record(name, results_dict, area, last_state, last_save_time, debo
     except Exception as e:
         return False
 
-
 def get_today_violation_dir():
     today = datetime.now().strftime("%Y-%m-%d")
     violation_dir = VIOLATIONS_DIR / today
     violation_dir.mkdir(parents=True, exist_ok=True)
     return violation_dir
-
 
 def load_violation_data():
     data_file = VIOLATIONS_DIR / "data.json"
@@ -131,7 +125,6 @@ def load_violation_data():
         "violation_count": 0,
         "violations": []
     }
-
 
 def save_violation_data(violation_data):
     data_file = VIOLATIONS_DIR / "data.json"
@@ -196,14 +189,12 @@ def save_violation_record(frame, name, results_dict, enabled_categories, last_vi
     except Exception as e:
         return False
 
-
 def get_today_passed_dir():
     """Get or create passed directory for today"""
     today = datetime.now().strftime("%Y-%m-%d")
     passed_dir = PASSED_DIR / today
     passed_dir.mkdir(parents=True, exist_ok=True)
     return passed_dir
-
 
 def load_passed_data():
     data_file = PASSED_DIR / "data.json"
@@ -220,7 +211,6 @@ def load_passed_data():
         "passed": []
     }
 
-
 def save_passed_data(passed_data):
     data_file = PASSED_DIR / "data.json"
     
@@ -231,11 +221,10 @@ def save_passed_data(passed_data):
     except Exception as e:
         return False
 
-
 def save_passed_record(frame, name, results_dict, enabled_categories, last_passed_state):
     has_violation = any(not results_dict.get(f"is_{cat}") if cat in enabled_categories else False 
                        for cat in ["mask", "glove", "helm", "glasses", "boots"])
-    
+
     if has_violation:
         return False
     
@@ -291,11 +280,9 @@ def save_passed_record(frame, name, results_dict, enabled_categories, last_passe
     except Exception as e:
         return False
 
-
 def normalize_label(label):
     """Normalize label untuk perbandingan"""
     return label.lower().replace("-", " ").strip()
-
 
 def replace_label_names(label):
     """Ganti nama label Hardhat -> Helm"""
@@ -305,7 +292,6 @@ def replace_label_names(label):
         label = label.replace("No-Hardhat", "No-Helm")
     return label
 
-
 def get_label_color(label):
     """Tentukan warna label berdasarkan tipe (no = merah, lainnya = hijau)"""
     normalized = label.lower().replace("-", " ").replace("_", " ").strip()
@@ -313,7 +299,6 @@ def get_label_color(label):
         return (0, 0, 255)  # Red - tidak compliant
     else:
         return (0, 255, 0)   # Green - compliant
-
 
 def draw_apd_status(frame, results_dict, enabled_categories):
     """Draw APD status labels on frame (list vertikal di corner)"""
@@ -368,7 +353,6 @@ def draw_apd_status(frame, results_dict, enabled_categories):
                    cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
     
     return frame
-
 
 def process_detections(frame, results, yolo_model, categories, area="Unknown",
                        last_state=None, last_save_time=None, 
@@ -487,7 +471,6 @@ def process_detections(frame, results, yolo_model, categories, area="Unknown",
     
     return frame, results_dict, detection_details, person_name
 
-
 def process_image(image, yolo_model, categories, area, confidence_threshold):
     """Process image and return results"""
     # Fix orientation if image has EXIF rotation
@@ -525,8 +508,7 @@ def process_image(image, yolo_model, categories, area, confidence_threshold):
     
     return annotated_frame_rgb, results_dict, detection_details, person_name
 
-
-def process_video(video_path, yolo_model, categories, area, confidence_threshold, placeholder=None):
+def process_video(video_path, yolo_model, categories, area, confidence_threshold, placeholder=None, frame_skip=1):
     """Process video and return results with real-time streaming"""
     cap = cv2.VideoCapture(video_path)
     
@@ -559,6 +541,15 @@ def process_video(video_path, yolo_model, categories, area, confidence_threshold
             scale = max_dim / max(h, w)
             frame = cv2.resize(frame, (int(w * scale), int(h * scale)))
             
+        # Skip processing if not the right frame
+        if frame_count % frame_skip != 0 and frame_count != 1:
+            # We still might want to show the frame but without processing to keep the video smooth
+            if placeholder:
+                # Optional: convert and show without annotation
+                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                placeholder.image(rgb_frame, width='stretch')
+            continue
+
         # Run YOLO inference
         results = yolo_model(frame, conf=confidence_threshold)[0]
         
@@ -595,7 +586,6 @@ def process_video(video_path, yolo_model, categories, area, confidence_threshold
     status_text.empty()
     
     return all_results
-
 
 # ====================
 # SIDEBAR CONFIGURATION
@@ -686,10 +676,21 @@ with st.sidebar:
         help="Higher = more strict, lower = more detections"
     )
     
+    # Frame Skip Configuration
+    st.subheader("Performance Settings")
+    frame_skip = st.slider(
+        "Detection Frequency",
+        min_value=1,
+        max_value=30,
+        value=5,
+        step=1,
+        help="Process every N-th frame. Higher = faster but might miss brief moments."
+    )
+    st.caption(f"Processing 1/{frame_skip} frames")
+    
     st.divider()
     st.info(f"Location: {selected_area}")
     st.info(f"Monitoring: {', '.join([cat.upper() for cat in categories])}")
-
 
 # ====================
 # LOAD MODEL
@@ -697,15 +698,15 @@ with st.sidebar:
 @st.cache_resource
 def load_yolo_model():
     """Load YOLO model (cached)"""
-    model_path = "model/yolo8_retrain_3x/best.pt"
+    # model_path = "model/yolo8_retrain_3x/best.pt"
+    # model_path = "model/yolov11/best.pt"
+    model_path = "model/yolov11_retrain_2x/best.pt"
     if not Path(model_path).exists():
         st.error(f"❌ Model not found at: {model_path}")
         st.stop()
     return YOLO(model_path)
 
-
 yolo_model = load_yolo_model()
-
 
 # ====================
 # MAIN UI
@@ -738,6 +739,14 @@ if app_mode == "Live Detection":
                 st.error("Failed to connect to camera source.")
                 break
             
+            # Frame skipping for live monitoring
+            frame_idx = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
+            if frame_idx % frame_skip != 0 and frame_idx != 0:
+                # Just show the raw frame to keep the stream smooth
+                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                st_frame.image(rgb_frame, width='stretch')
+                continue
+
             # Run inference
             results = yolo_model(frame, conf=confidence_threshold, imgsz=640)[0]
             
@@ -763,7 +772,6 @@ if app_mode == "Live Detection":
         st.info("Stream stopped.")
     else:
         st.info("Please toggle 'Start Detection' in the sidebar to begin CCTV monitoring.")
-
 
 # ====================
 # IMAGE DETECTION
@@ -844,7 +852,6 @@ elif app_mode == "Image Detection":
             )
         else:
             st.info("ℹ️ No detections found in the image")
-
 
 # ====================
 # SECURITY RECORDS
@@ -934,7 +941,6 @@ elif app_mode == "Security Records": # Security Records
                         else:
                             st.error(f"Image not found at: {img_path}")
 
-
 # ====================
 # VIDEO DETECTION
 # ====================
@@ -960,7 +966,8 @@ elif app_mode == "Video Detection":
             with st.spinner(" Processing & Streaming video..."):
                 all_results = process_video(
                     video_path, yolo_model, categories, selected_area, 
-                    confidence_threshold, placeholder=video_placeholder
+                    confidence_threshold, placeholder=video_placeholder,
+                    frame_skip=frame_skip
                 )
             
             st.success(f"✅ Video processed! {len(all_results)} frames analyzed")
@@ -1000,9 +1007,6 @@ elif app_mode == "Video Detection":
             # Cleanup temporary file
             if os.path.exists(video_path):
                 os.remove(video_path)
-
-
-
 
 # ====================
 # FOOTER

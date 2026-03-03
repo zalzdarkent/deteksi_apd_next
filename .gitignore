@@ -1,2 +1,11 @@
 credentials.json
 update.txt
+violations/
+passed/
+data/
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.avi
+**/__pycache__/
