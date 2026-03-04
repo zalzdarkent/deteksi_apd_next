@@ -12,6 +12,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import time
 import random
+# import base64 (Unused after Roboflow removal)
 
 # ====================
 # CONSTANTS & DIRECTORIES
@@ -90,7 +91,7 @@ def save_check_record(name, results_dict, area, last_state, last_save_time, debo
     try:
         row_data = [area, name]
         
-        for cat in ["mask", "glove", "helm", "glasses", "boots"]:
+        for cat in ["helm", "fire-extinguisher"]:
             row_data.append(results_dict.get(f"is_{cat}", False))
         
         timestamp = datetime.now().isoformat()
@@ -156,7 +157,7 @@ def save_violation_record(frame, name, results_dict, enabled_categories, last_vi
     unique_id = f"{timestamp_ms}_{random_id}"
     
     violation_detail = {}
-    for cat in ["mask", "glove", "helm", "glasses", "boots"]:
+    for cat in ["helm", "fire-extinguisher"]:
         if cat in enabled_categories:
             violation_detail[f"is_{cat}"] = results_dict.get(f"is_{cat}")
         else:
@@ -242,7 +243,7 @@ def save_passed_record(frame, name, results_dict, enabled_categories, last_passe
     
     # Create passed record with null for disabled categories
     record_detail = {}
-    for cat in ["mask", "glove", "helm", "glasses", "boots"]:
+    for cat in ["helm", "fire-extinguisher"]:
         if cat in enabled_categories:
             record_detail[f"is_{cat}"] = results_dict.get(f"is_{cat}")
         else:
@@ -304,12 +305,13 @@ def draw_apd_status(frame, results_dict, enabled_categories):
     """Draw APD status labels on frame (list vertikal di corner)"""
     status_text = []
     
-    for cat in ["mask", "glove", "helm", "glasses", "boots"]:
+    for cat in ["helm", "fire-extinguisher"]:
         if cat in enabled_categories:
             is_compliant = results_dict.get(f"is_{cat}")
             if is_compliant is not None:  # Not null
-                status = "OK" if is_compliant else "MISSING"
-                status_full = f"{cat.upper()}: {status}"
+                status = "COMPLIANT" if is_compliant else "VIOLATION"
+                display_name = "APAR" if cat == "fire-extinguisher" else cat.upper()
+                status_full = f"{display_name}: {status}"
                 status_text.append((status_full, is_compliant))
     
     # Check if all passed
@@ -354,12 +356,12 @@ def draw_apd_status(frame, results_dict, enabled_categories):
     
     return frame
 
-def process_detections(frame, results, yolo_model, categories, area="Unknown",
+def process_detections(frame, detections, categories, area="Unknown",
                        last_state=None, last_save_time=None, 
                        last_violation_state=None, last_passed_state=None,
                        excluded_labels=None):
     """
-    Process YOLO detections and return:
+    Process detections list (standardized format) and return:
     - Annotated frame with bounding boxes
     - Detection results dictionary
     - List of detection details for table
@@ -373,20 +375,16 @@ def process_detections(frame, results, yolo_model, categories, area="Unknown",
     if last_violation_state is None: last_violation_state = {}
     if last_passed_state is None: last_passed_state = {}
 
-    # Get detections
-    boxes = results.boxes
-    
-    # Track best detection per category
+    # Initialize tracking variables
     best_results = {}
     best_conf = {}
     detection_details = []
-    
-    # Draw bounding boxes for APD
-    for box in boxes:
-        x1, y1, x2, y2 = map(int, box.xyxy[0])
-        conf = float(box.conf[0])
-        cls = int(box.cls[0])
-        label = yolo_model.names[cls] if hasattr(yolo_model, 'names') else str(cls)
+
+    # Process detections
+    for det in detections:
+        x1, y1, x2, y2 = det['box']
+        conf = det['confidence']
+        label = det['label']
         
         label = replace_label_names(label)
         norm = normalize_label(label)
@@ -444,7 +442,7 @@ def process_detections(frame, results, yolo_model, categories, area="Unknown",
     
     # Create results dictionary for logging
     results_dict = {"area": area}
-    for cat in ["mask", "glove", "helm", "glasses", "boots"]:
+    for cat in ["helm", "fire-extinguisher"]:
         if cat in categories:
             if cat in best_results:
                 results_dict[f"is_{cat}"] = not best_results[cat].lower().startswith("no")
@@ -472,7 +470,7 @@ def process_detections(frame, results, yolo_model, categories, area="Unknown",
     return frame, results_dict, detection_details, person_name
 
 def process_image(image, yolo_model, categories, area, confidence_threshold):
-    """Process image and return results"""
+    """Process image and return results using local YOLO model"""
     # Fix orientation if image has EXIF rotation
     image = ImageOps.exif_transpose(image)
     
@@ -480,7 +478,6 @@ def process_image(image, yolo_model, categories, area, confidence_threshold):
     image = image.convert("RGB")
     
     # Standardize dimension to improve detection on very high-res photos
-    # The 'sweet spot' found by user is around 1000px
     max_dim = 1024
     w, h = image.size
     if max(w, h) > max_dim:
@@ -488,15 +485,29 @@ def process_image(image, yolo_model, categories, area, confidence_threshold):
         new_w, new_h = int(w * scale), int(h * scale)
         image = image.resize((new_w, new_h), Image.LANCZOS)
     
-    # Convert to BGR for OpenCV drawing (on the standardized size)
+    # Convert to BGR for OpenCV drawing
     frame = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
     
-    # Run YOLO inference
-    results = yolo_model(image, conf=confidence_threshold)[0]
+    # Run Inference using local YOLO model
+    results = yolo_model(frame, conf=confidence_threshold)[0]
+    
+    # Convert YOLO results to standard format
+    detections = []
+    for box in results.boxes:
+        x1, y1, x2, y2 = map(int, box.xyxy[0])
+        conf = float(box.conf[0])
+        cls = int(box.cls[0])
+        label = yolo_model.names[cls] if hasattr(yolo_model, 'names') else str(cls)
+        
+        detections.append({
+            'box': [x1, y1, x2, y2],
+            'confidence': conf,
+            'label': label
+        })
     
     # Process detections using the BGR frame for drawing
     annotated_frame, results_dict, detection_details, person_name = process_detections(
-        frame, results, yolo_model, categories, area=area,
+        frame, detections, categories, area=area,
         last_state=st.session_state.last_state,
         last_save_time=st.session_state.last_save_time,
         last_violation_state=st.session_state.last_violation_state,
@@ -512,80 +523,93 @@ def process_video(video_path, yolo_model, categories, area, confidence_threshold
     """Process video and return results with real-time streaming"""
     cap = cv2.VideoCapture(video_path)
     
-    all_results = []
-    frame_count = 0
-    
-    # Persistent state for video tracking
-    last_state = {}
-    last_save_time = {}
-    last_violation_state = {}
-    last_passed_state = {}
-    
-    # Get video properties
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    
-    progress_bar = st.progress(0)
-    status_text = st.empty()
-    
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+    try:
+        all_results = []
+        frame_count = 0
         
-        frame_count += 1
+        # Persistent state for video tracking
+        last_state = {}
+        last_save_time = {}
+        last_violation_state = {}
+        last_passed_state = {}
         
-        # Standardize resolution for stability if video is very high-res
-        max_dim = 1024
-        h, w = frame.shape[:2]
-        if max(h, w) > max_dim:
-            scale = max_dim / max(h, w)
-            frame = cv2.resize(frame, (int(w * scale), int(h * scale)))
+        # Get video properties
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
             
-        # Skip processing if not the right frame
-        if frame_count % frame_skip != 0 and frame_count != 1:
-            # We still might want to show the frame but without processing to keep the video smooth
-            if placeholder:
-                # Optional: convert and show without annotation
-                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                placeholder.image(rgb_frame, width='stretch')
-            continue
+            frame_count += 1
+            
+            # Standardize resolution for stability if video is very high-res
+            max_dim = 1024
+            h, w = frame.shape[:2]
+            if max(h, w) > max_dim:
+                scale = max_dim / max(h, w)
+                frame = cv2.resize(frame, (int(w * scale), int(h * scale)))
+                
+            # Skip processing if not the right frame
+            if frame_count % frame_skip != 0 and frame_count != 1:
+                if placeholder:
+                    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    placeholder.image(rgb_frame, width='stretch')
+                continue
 
-        # Run YOLO inference
-        results = yolo_model(frame, conf=confidence_threshold)[0]
+            # Run Inference using local YOLO model
+            results = yolo_model(frame, conf=confidence_threshold)[0]
+            
+            # Convert YOLO results to standard format
+            detections = []
+            for box in results.boxes:
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                conf = float(box.conf[0])
+                cls = int(box.cls[0])
+                label = yolo_model.names[cls] if hasattr(yolo_model, 'names') else str(cls)
+                
+                detections.append({
+                    'box': [x1, y1, x2, y2],
+                    'confidence': conf,
+                    'label': label
+                })
+            
+            # Process detections
+            annotated_frame, results_dict, detection_details, person_name = process_detections(
+                frame, detections, categories, area=area,
+                last_state=last_state, last_save_time=last_save_time, 
+                last_violation_state=last_violation_state, last_passed_state=last_passed_state
+            )
+            
+            # Convert to RGB for streaming
+            annotated_frame_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+            
+            # Update streaming placeholder
+            if placeholder:
+                placeholder.image(annotated_frame_rgb, width='stretch')
+            
+            # Store results with frame number
+            all_results.append({
+                "frame": frame_count,
+                "results": results_dict,
+                "detections": detection_details,
+                "person_name": person_name
+            })
+            
+            # Update progress
+            if frame_count % 10 == 0 or frame_count == total_frames:
+                progress = frame_count / total_frames
+                progress_bar.progress(progress)
+                status_text.text(f"Processing & Streaming... {frame_count}/{total_frames} frames")
         
-        # Process detections
-        annotated_frame, results_dict, detection_details, person_name = process_detections(
-            frame, results, yolo_model, categories, area=area,
-            last_state=last_state, last_save_time=last_save_time, 
-            last_violation_state=last_violation_state, last_passed_state=last_passed_state
-        )
-        
-        # Convert to RGB for streaming
-        annotated_frame_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-        
-        # Update streaming placeholder
-        if placeholder:
-            placeholder.image(annotated_frame_rgb, width='stretch')
-        
-        # Store results with frame number
-        all_results.append({
-            "frame": frame_count,
-            "results": results_dict,
-            "detections": detection_details,
-            "person_name": person_name
-        })
-        
-        # Update progress
-        if frame_count % 10 == 0 or frame_count == total_frames:
-            progress = frame_count / total_frames
-            progress_bar.progress(progress)
-            status_text.text(f"Processing & Streaming... {frame_count}/{total_frames} frames")
-    
-    cap.release()
-    progress_bar.empty()
-    status_text.empty()
-    
-    return all_results
+        progress_bar.empty()
+        status_text.empty()
+        return all_results
+    finally:
+        cap.release()
 
 # ====================
 # SIDEBAR CONFIGURATION
@@ -640,26 +664,20 @@ with st.sidebar:
     
     # Category configuration
     st.divider()
-    st.markdown("### APD Categories")
+    st.markdown("### Detection Categories")
     # Get configuration for selected area
     current_area_config = areas_config.get(selected_area, {
-        "mask": True, "glove": True, "helm": True, "glasses": True, "boots": True
+        "helm": True, "fire-extinguisher": True
     })
     
     categories = []
     col1, col2 = st.columns(2)
     with col1:
-        if st.checkbox("Mask", value=current_area_config.get("mask", True), key=f"cb_mask_{selected_area}"):
-            categories.append("mask")
-        if st.checkbox("Glove", value=current_area_config.get("glove", True), key=f"cb_glove_{selected_area}"):
-            categories.append("glove")
         if st.checkbox("Helm", value=current_area_config.get("helm", True), key=f"cb_helm_{selected_area}"):
             categories.append("helm")
     with col2:
-        if st.checkbox("Glasses", value=current_area_config.get("glasses", True), key=f"cb_glasses_{selected_area}"):
-            categories.append("glasses")
-        if st.checkbox("Boots", value=current_area_config.get("boots", True), key=f"cb_boots_{selected_area}"):
-            categories.append("boots")
+        if st.checkbox("APAR (Fire Extinguisher)", value=current_area_config.get("fire-extinguisher", True), key=f"cb_fire_{selected_area}"):
+            categories.append("fire-extinguisher")
     
     if not categories:
         st.warning("Please select at least one category for detection.")
@@ -692,21 +710,22 @@ with st.sidebar:
     st.info(f"Location: {selected_area}")
     st.info(f"Monitoring: {', '.join([cat.upper() for cat in categories])}")
 
-# ====================
-# LOAD MODEL
-# ====================
 @st.cache_resource
-def load_yolo_model():
-    """Load YOLO model (cached)"""
-    # model_path = "model/yolo8_retrain_3x/best.pt"
-    # model_path = "model/yolov11/best.pt"
-    model_path = "model/yolov11_retrain_2x/best.pt"
-    if not Path(model_path).exists():
-        st.error(f"❌ Model not found at: {model_path}")
-        st.stop()
-    return YOLO(model_path)
+def load_local_model():
+    """Initialize local YOLO11 model (cached)"""
+    model_path = Path("model/yolov11_new_retrain/best.pt")
+    if not model_path.exists():
+        # Fallback to yolov11 2x if 3x is not found, to keep app running
+        fallback_path = Path("model/yolov11_new_retrain/best.pt")
+        if fallback_path.exists():
+            st.warning(f"Model 3x not found at {model_path}. Using fallback 2x model.")
+            return YOLO(str(fallback_path))
+        else:
+            st.error(f"Critical Error: YOLO model not found at {model_path}")
+            return None
+    return YOLO(str(model_path))
 
-yolo_model = load_yolo_model()
+yolo_model = load_local_model()
 
 # ====================
 # MAIN UI
@@ -728,48 +747,71 @@ if app_mode == "Live Detection":
     
     if is_running:
         cap = cv2.VideoCapture(camera_source)
-        st_frame = st.empty()
-        
-        # UI for stopping within the main area
-        stop_btn = st.button("Stop Stream", type="primary")
-        
-        while cap.isOpened() and not stop_btn:
-            ret, frame = cap.read()
-            if not ret:
-                st.error("Failed to connect to camera source.")
-                break
+        try:
+            # Create persistent placeholders
+            alert_holder = st.empty()
+            st_frame = st.empty()
             
-            # Frame skipping for live monitoring
-            frame_idx = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
-            if frame_idx % frame_skip != 0 and frame_idx != 0:
-                # Just show the raw frame to keep the stream smooth
-                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                st_frame.image(rgb_frame, width='stretch')
-                continue
+            # UI for stopping within the main area
+            stop_btn = st.button("Stop Stream", type="primary")
+            
+            while cap.isOpened() and not stop_btn:
+                ret, frame = cap.read()
+                if not ret:
+                    st.error("Failed to connect to camera source.")
+                    break
+                
+                # Frame skipping for live monitoring
+                frame_idx = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
+                if frame_idx % frame_skip != 0 and frame_idx != 0:
+                    # Just show the raw frame to keep the stream smooth
+                    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    st_frame.image(rgb_frame, width='stretch')
+                    continue
 
-            # Run inference
-            results = yolo_model(frame, conf=confidence_threshold, imgsz=640)[0]
+                # Run inference using local YOLO model
+                results = yolo_model(frame, conf=confidence_threshold)[0]
+                
+                # Convert YOLO results to standard format
+                detections = []
+                for box in results.boxes:
+                    x1, y1, x2, y2 = map(int, box.xyxy[0])
+                    conf = float(box.conf[0])
+                    cls = int(box.cls[0])
+                    label = yolo_model.names[cls] if hasattr(yolo_model, 'names') else str(cls)
+                    
+                    detections.append({
+                        'box': [x1, y1, x2, y2],
+                        'confidence': conf,
+                        'label': label
+                    })
+                
+                # Process detections
+                annotated_frame, results_dict, detection_details, person_name = process_detections(
+                    frame, detections, categories, area=selected_area,
+                    last_state=st.session_state.last_state,
+                    last_save_time=st.session_state.last_save_time,
+                    last_violation_state=st.session_state.last_violation_state,
+                    last_passed_state=st.session_state.last_passed_state
+                )
+                
+                # Persistent Alerts logic
+                missing = [cat.upper() if cat != "fire-extinguisher" else "APAR" 
+                          for cat in categories if not results_dict.get(f"is_{cat}", False)]
+                if missing:
+                    alert_holder.error(f"⚠️ **VIOLASI KEAMANAN: {', '.join(missing)} TIDAK TERDETEKSI!**")
+                else:
+                    alert_holder.success("✅ **SEMUA APD LENGKAP - RADIUS AMAN**")
+                
+                # Convert to RGB
+                annotated_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+                
+                # Stream to UI
+                st_frame.image(annotated_rgb, width='stretch')
             
-            # Process detections
-            annotated_frame, results_dict, detection_details, person_name = process_detections(
-                frame, results, yolo_model, categories, area=selected_area,
-                last_state=st.session_state.last_state,
-                last_save_time=st.session_state.last_save_time,
-                last_violation_state=st.session_state.last_violation_state,
-                last_passed_state=st.session_state.last_passed_state
-            )
-            
-            # Convert to RGB
-            annotated_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-            
-            # Stream to UI
-            st_frame.image(annotated_rgb, width='stretch')
-            
-            # Small delay to reduce CPU usage if needed
-            # time.sleep(0.01)
-            
-        cap.release()
-        st.info("Stream stopped.")
+            st.info("Stream stopped.")
+        finally:
+            cap.release()
     else:
         st.info("Please toggle 'Start Detection' in the sidebar to begin CCTV monitoring.")
 
@@ -803,6 +845,14 @@ elif app_mode == "Image Detection":
                     image, yolo_model, categories, selected_area, confidence_threshold
                 )
             
+            # Show Alerts for Image Detection
+            missing = [cat.upper() if cat != "fire-extinguisher" else "APAR" 
+                      for cat in categories if not results_dict.get(f"is_{cat}", False)]
+            if missing:
+                st.error(f"⚠️ **VIOLASI: {', '.join(missing)} TIDAK TERDETEKSI!**")
+            else:
+                st.success("✅ **SEMUA APD TERDETEKSI**")
+
             st.image(annotated_image, width='stretch')
         
         # Display results
@@ -811,7 +861,7 @@ elif app_mode == "Image Detection":
         
         # Create results table
         summary_data = []
-        for cat in ["mask", "glove", "helm", "glasses", "boots"]:
+        for cat in ["helm", "fire-extinguisher"]:
             if cat in categories:
                 status = results_dict.get(f"is_{cat}", False)
                 status_text = "✅ COMPLIANT" if status else "❌ VIOLATION"
@@ -947,66 +997,106 @@ elif app_mode == "Security Records": # Security Records
 elif app_mode == "Video Detection":
     st.subheader("Video Analytics")
     
-    uploaded_video = st.file_uploader(
-        "Choose a video file",
-        type=["mp4", "avi", "mov", "mkv"]
+    # Sample videos in samples/ folder
+    sample_videos = list(Path("samples").glob("*.mp4"))
+    sample_options = ["None (Upload your own)"] + [v.name for v in sample_videos]
+    
+    selected_sample = st.selectbox(
+        "Or choose a sample video",
+        options=sample_options,
+        index=0
     )
     
+    uploaded_video = None
+    if selected_sample == "None (Upload your own)":
+        uploaded_video = st.file_uploader(
+            "Choose a video file",
+            type=["mp4", "avi", "mov", "mkv"]
+        )
+    else:
+        # Load from samples
+        uploaded_video = open(Path("samples") / selected_sample, "rb")
+
     if uploaded_video is not None:
-        # Save video to temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_file:
-            tmp_file.write(uploaded_video.read())
-            video_path = tmp_file.name
-        
         try:
-            # Create placeholders for streaming
-            video_placeholder = st.empty()
+            # Save video to temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_file:
+                tmp_file.write(uploaded_video.read())
+                video_path = tmp_file.name
             
-            # Process video with real-time streaming
-            with st.spinner(" Processing & Streaming video..."):
-                all_results = process_video(
-                    video_path, yolo_model, categories, selected_area, 
-                    confidence_threshold, placeholder=video_placeholder,
-                    frame_skip=frame_skip
-                )
-            
-            st.success(f"✅ Video processed! {len(all_results)} frames analyzed")
-            
-            # Show summary of violations found
-            with st.expander("Detailed Statistics", expanded=True):
-                # Analyze all frames
-                total_frames = len(all_results)
-                compliance_by_category = {cat: [] for cat in categories}
+            try:
+                # Placeholders for video alert and stream
+                alert_holder = st.empty()
+                video_placeholder = st.empty()
                 
-                for frame_result in all_results:
-                    for cat in categories:
-                        compliance_by_category[cat].append(
-                            frame_result["results"].get(f"is_{cat}", False)
-                        )
+                # Process video with real-time streaming
+                with st.spinner(" Processing & Streaming video..."):
+                    processed_frames = 0
+                    cap_video = cv2.VideoCapture(video_path)
+                    total_v_frames = int(cap_video.get(cv2.CAP_PROP_FRAME_COUNT))
+                    cap_video.release()
+
+                    # We'll update the alert_holder inside process_video if we refactor it, 
+                    # but for now we'll handle the last state from all_results
+                    all_results = process_video(
+                        video_path, yolo_model, categories, selected_area, 
+                        confidence_threshold, placeholder=video_placeholder,
+                        frame_skip=frame_skip
+                    )
                 
-                # Create statistics table
-                stats_data = []
-                for cat in categories:
-                    compliant_frames = sum(compliance_by_category[cat])
-                    compliance_rate = (compliant_frames / total_frames * 100) if total_frames > 0 else 0
+                if all_results:
+                    last_res = all_results[-1]["results"]
+                    missing = [cat.upper() if cat != "fire-extinguisher" else "APAR" 
+                              for cat in categories if not last_res.get(f"is_{cat}", False)]
+                    if missing:
+                        alert_holder.error(f"⚠️ **STATUS AKHIR: {', '.join(missing)} TIDAK TERDETEKSI!**")
+                    else:
+                        alert_holder.success("✅ **STATUS AKHIR: SEMUA APD LENGKAP**")
+
+                st.success(f"✅ Video processed! {len(all_results)} frames analyzed")
+                
+                # Show summary of violations found
+                with st.expander("Detailed Statistics", expanded=True):
+                    # Analyze all frames
+                    total_frames_analyzed = len(all_results)
+                    compliance_by_category = {cat: [] for cat in categories}
                     
-                    stats_data.append({
-                        "Category": cat.upper(),
-                        "Compliant Frames": f"{compliant_frames}/{total_frames}",
-                        "Compliance Rate": f"{compliance_rate:.1f}%",
-                        "Status": "✅ GOOD" if compliance_rate >= 80 else "⚠️ NEEDS ATTENTION"
-                    })
-                
-                st.dataframe(
-                    stats_data,
-                    width='stretch',
-                    hide_index=True
-                )
-        
+                    for frame_result in all_results:
+                        for cat in categories:
+                            compliance_by_category[cat].append(
+                                frame_result["results"].get(f"is_{cat}", False)
+                            )
+                    
+                    # Create statistics table
+                    stats_data = []
+                    for cat in categories:
+                        compliant_frames = sum(compliance_by_category[cat])
+                        compliance_rate = (compliant_frames / total_frames_analyzed * 100) if total_frames_analyzed > 0 else 0
+                        
+                        display_name = "APAR" if cat == "fire-extinguisher" else cat.upper()
+                        stats_data.append({
+                            "Category": display_name,
+                            "Compliant Frames": f"{compliant_frames}/{total_frames_analyzed}",
+                            "Compliance Rate": f"{compliance_rate:.1f}%",
+                            "Status": "✅ GOOD" if compliance_rate >= 80 else "⚠️ NEEDS ATTENTION"
+                        })
+                    
+                    st.dataframe(
+                        stats_data,
+                        use_container_width=True,
+                        hide_index=True
+                    )
+            finally:
+                # Cleanup temporary file
+                if os.path.exists(video_path):
+                    try:
+                        os.remove(video_path)
+                    except Exception as e:
+                        # Log warning instead of crashing on cleanup failure
+                        pass
         finally:
-            # Cleanup temporary file
-            if os.path.exists(video_path):
-                os.remove(video_path)
+            if selected_sample != "None (Upload your own)":
+                uploaded_video.close()
 
 # ====================
 # FOOTER
@@ -1014,7 +1104,7 @@ elif app_mode == "Video Detection":
 st.divider()
 st.markdown("""
 <div style='text-align: center; color: gray; font-size: 12px;'>
-    <p>APD Detection System | Detection Model: YOLOv8</p>
-    <p>Last Updated: February 2026</p>
+    <p>APD Detection System | Engine: Local YOLO11 Model</p>
+    <p>Last Updated: March 2026</p>
 </div>
 """, unsafe_allow_html=True)

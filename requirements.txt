@@ -6,3 +6,4 @@ Pillow
 gspread
 google-auth
 pathlib
+requests
