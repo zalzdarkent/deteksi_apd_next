@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Detection - Video Stream</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        h1 { margin-bottom: 2rem; font-weight: 700; color: #60a5fa; }
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .sidebar {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .video-list {
+            list-style: none;
+            padding: 0;
+        }
+        .video-item {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background: #334155;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: block;
+            color: var(--text);
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .video-item:hover { background: var(--primary); transform: translateX(5px); }
+        .video-item.active { background: var(--primary); font-weight: 600; }
+        .main-content {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .video-container {
+            width: 100%;
+            background: #000;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+        #stream {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .controls {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            background: #334155;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+        }
+        .btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            min-width: 80px;
+        }
+        .btn:hover { opacity: 0.9; }
+        .slider-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        input[type="range"] {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+        .time-display {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Safety Detection Dashboard</h1>
+    
+    <div class="container">
+        <div class="sidebar">
+            <h3>Video Samples</h3>
+            <div class="video-list">
+                {% for video in videos %}
+                <a href="/?video={{ video }}" class="video-item {% if selected_video == video %}active{% endif %}">
+                    {{ video }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="main-content">
+            {% if selected_video %}
+            <div class="status-badge" id="status-badge">Live Detection</div>
+            <h3 style="margin-top: 0;">Playing: {{ selected_video }}</h3>
+            
+            <div class="video-container">
+                <img id="stream" src="/video_feed/{{ selected_video }}" alt="Video Stream">
+            </div>
+
+            <div class="controls">
+                <button class="btn" id="playBtn">Pause</button>
+                <div class="slider-container">
+                    <input type="range" id="seekBar" value="0" step="1">
+                    <span class="time-display" id="timeDisplay">00:00 / 00:00</span>
+                </div>
+            </div>
+
+            <script>
+                const stream = document.getElementById('stream');
+                const playBtn = document.getElementById('playBtn');
+                const seekBar = document.getElementById('seekBar');
+                const timeDisplay = document.getElementById('timeDisplay');
+                const statusBadge = document.getElementById('status-badge');
+                
+                let isPlaying = true;
+                let currentFrame = 0;
+                let totalFrames = 0;
+                let fps = 30;
+                let videoName = "{{ selected_video }}";
+                let updateInterval;
+
+                // Load Video Info
+                fetch(`/video_info/${videoName}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        totalFrames = data.total_frames;
+                        fps = data.fps;
+                        seekBar.max = totalFrames;
+                        updateTimeDisplay();
+                        startProgressTracking();
+                    });
+
+                function updateTimeDisplay() {
+                    const currentTime = formatTime(currentFrame / fps);
+                    const totalTime = formatTime(totalFrames / fps);
+                    timeDisplay.textContent = `${currentTime} / ${totalTime}`;
+                }
+
+                function formatTime(seconds) {
+                    const m = Math.floor(seconds / 60);
+                    const s = Math.floor(seconds % 60);
+                    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                }
+
+                function startProgressTracking() {
+                    if (updateInterval) clearInterval(updateInterval);
+                    updateInterval = setInterval(() => {
+                        if (isPlaying && currentFrame < totalFrames) {
+                            currentFrame++;
+                            seekBar.value = currentFrame;
+                            updateTimeDisplay();
+                        } else if (currentFrame >= totalFrames) {
+                            // Loop logic
+                            currentFrame = 0;
+                            seekTo(0);
+                        }
+                    }, 1000 / fps);
+                }
+
+                playBtn.addEventListener('click', () => {
+                    isPlaying = !isPlaying;
+                    playBtn.textContent = isPlaying ? 'Pause' : 'Play';
+                    statusBadge.textContent = isPlaying ? 'Live Detection' : 'Paused';
+                    statusBadge.style.background = isPlaying ? '#10b981' : '#64748b';
+                    
+                    if (!isPlaying) {
+                        // When pausing, fetch the current frame as a static image
+                        stream.src = `/video_frame/${videoName}?frame=${currentFrame}&t=${new Date().getTime()}`;
+                    } else {
+                        seekTo(currentFrame);
+                    }
+                });
+
+                seekBar.addEventListener('input', () => {
+                    currentFrame = parseInt(seekBar.value);
+                    updateTimeDisplay();
+                    if (!isPlaying) {
+                        // Show frame preview while scrubbing if paused
+                        stream.src = `/video_frame/${videoName}?frame=${currentFrame}&t=${new Date().getTime()}`;
+                    }
+                });
+
+                seekBar.addEventListener('change', () => {
+                    seekTo(currentFrame);
+                });
+
+                function seekTo(frame) {
+                    currentFrame = frame;
+                    if (isPlaying) {
+                        stream.src = `/video_feed/${videoName}?start_frame=${frame}&t=${new Date().getTime()}`;
+                    } else {
+                        stream.src = `/video_frame/${videoName}?frame=${frame}&t=${new Date().getTime()}`;
+                    }
+                }
+            </script>
+            {% else %}
+            <div class="video-container">
+                <div class="placeholder" style="color: #64748b; text-align: center;">
+                    <p>Pilih video di samping untuk memulai deteksi</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

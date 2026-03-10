@@ -713,10 +713,10 @@ with st.sidebar:
 @st.cache_resource
 def load_local_model():
     """Initialize local YOLO11 model (cached)"""
-    model_path = Path("model/yolov11_new_retrain/best.pt")
+    model_path = Path("model/yolov11_roboflow/weights.pt")
     if not model_path.exists():
         # Fallback to yolov11 2x if 3x is not found, to keep app running
-        fallback_path = Path("model/yolov11_new_retrain/best.pt")
+        fallback_path = Path("model/yolov11_roboflow/weights.pt")
         if fallback_path.exists():
             st.warning(f"Model 3x not found at {model_path}. Using fallback 2x model.")
             return YOLO(str(fallback_path))
