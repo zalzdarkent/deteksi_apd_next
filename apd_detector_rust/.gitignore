@@ -1,0 +1,24 @@
+# Rust
+/target/
+Cargo.lock
+**/*.rs.bk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Project outputs
+../output_videos/
+*.onnx.lock
+
+# Temporary
+*.tmp
+*.log

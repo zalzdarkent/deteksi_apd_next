@@ -1,0 +1,392 @@
+﻿**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.14.28
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cmd :    Compiling 
+apd_detector v0.1.0 (C:\Magan
+g_Alif\Trial\apd_detector_rus
+t)
+At line:1 char:1
++ cmd /c "call ""C:\Program 
+Files\Microsoft Visual 
+Studio\2022\Communit ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (   Comp  
+  iling ap..._detector_rus   
+ t):String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+warning: unused import: 
+`std::path::PathBuf`
+ --> src\main.rs:2:5
+  |
+2 | use std::path::PathBuf;
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: 
+`#[warn(unused_imports)]` 
+(part of `#[warn(unused)]`) 
+on by default
+
+warning: unused import: 
+`IxDyn`
+ --> src\detector.rs:4:23
+  |
+4 | use ndarray::{Array4, 
+IxDyn};
+  |                       
+^^^^^
+
+warning: unused import: 
+`std::path::Path`
+ --> src\detector.rs:8:5
+  |
+8 | use std::path::Path;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: 
+`save_detections_json`
+ --> src\processor.rs:3:55
+  |
+3 | use crate::utils::{draw_d
+etections, preprocess_frame, 
+save_detections_json};
+  |                          
+                             
+^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: 
+`CV_32F` and `Size`
+ --> src\utils.rs:1:40
+  |
+1 | use 
+opencv::core::{Point, 
+Scalar, Mat, Size, CV_32F};
+  |                          
+              ^^^^  ^^^^^^
+
+error[E0277]: the trait 
+bound 
+`SessionInputValue<'_>: From<
+ArrayBase<OwnedRepr<f32>, 
+Dim<[usize; 4]>>>` is not 
+satisfied
+  --> src\detector.rs:66:26
+   |
+66 |             
+.run(inputs![input_array]?)
+   |                  
+--------^^^^^^^^^^^-
+   |                  |      
+ |
+   |                  |      
+ the trait `From<ArrayBase<Ow
+nedRepr<f32>, Dim<[usize; 
+4]>>>` is not implemented 
+for `SessionInputValue<'_>`
+   |                  
+required by a bound 
+introduced by this call
+   |
+help: the following other 
+types implement trait 
+`From<T>`
+  --> C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ort-2.0.0-rc
+.12\src\session\input.rs:24:1
+   |
+24 | impl<'v, T: 
+ValueTypeMarker + ?Sized> 
+From<ValueRefMut<'v, T>> for 
+SessionInputValue<'v> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^ 
+`SessionInputValue<'_>` 
+implements 
+`From<ValueRefMut<'_, T>>`
+...
+29 | impl<'v, T: 
+ValueTypeMarker + ?Sized> 
+From<ValueRef<'v, T>> for 
+SessionInputValue<'v> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^ `SessionInputValue<'_>` 
+implements 
+`From<ValueRef<'_, T>>`
+...
+34 | impl<T: ValueTypeMarker 
++ ?Sized> From<Value<T>> for 
+SessionInputValue<'_> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^ 
+`SessionInputValue<'_>` 
+implements 
+`From<ort::value::Value<T>>`
+...
+39 | impl<'v, T: 
+ValueTypeMarker + ?Sized> 
+From<&'v Value<T>> for 
+SessionInputValue<'v> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ `SessionInputValue<'_>` 
+implements 
+`From<&ort::value::Value<T>>`
+   = note: required for 
+`ArrayBase<OwnedRepr<f32>, 
+Dim<[usize; 4]>>` to 
+implement 
+`Into<SessionInputValue<'_>>`
+
+error[E0277]: the `?` 
+operator can only be applied 
+to values that implement 
+`Try`
+  --> src\detector.rs:66:18
+   |
+66 |             
+.run(inputs![input_array]?)
+   |                  
+^^^^^^^^^^^^^^^^^^^^^ the 
+`?` operator cannot be 
+applied to type 
+`[SessionInputValue<'_>; 1]`
+   |
+   = help: the nightly-only, 
+unstable trait `Try` is not 
+implemented for 
+`[SessionInputValue<'_>; 1]`
+
+error[E0599]: no method 
+named `view` found for tuple 
+`(&ort::value::Shape, 
+&[f32])` in the current scope
+  --> src\detector.rs:80:64
+   |
+80 |         let mut 
+detections = self.parse_detec
+tions(output_data.view().into
+_dyn(), frame_height, 
+frame_width)?;
+   |                         
+                             
+          ^^^^ method not 
+found in 
+`(&ort::value::Shape, 
+&[f32])`
+
+error[E0599]: no method 
+named `get_input_shape` 
+found for reference `&'a 
+APDDetector` in the current 
+scope
+   --> 
+src\processor.rs:152:37
+    |
+152 |         let input_h = s
+elf.detector.get_input_shape(
+).0;
+    |                        
+             ^^^^^^^^^^^^^^^ 
+method not found in `&'a 
+APDDetector`
+
+error[E0599]: no method 
+named `get_input_shape` 
+found for reference `&'a 
+APDDetector` in the current 
+scope
+   --> 
+src\processor.rs:153:37
+    |
+153 |         let input_w = s
+elf.detector.get_input_shape(
+).1;
+    |                        
+             ^^^^^^^^^^^^^^^ 
+method not found in `&'a 
+APDDetector`
+
+error[E0308]: arguments to 
+this method are incorrect
+   --> 
+src\processor.rs:175:33
+    |
+175 |             match self.
+detector.detect(&processed_da
+ta, frame_height as usize, 
+frame_width as usize) {
+    |                        
+         ^^^^^^              
+    ---------------------  
+-------------------- 
+expected `i32`, found `usize`
+    |                        
+                             
+    |
+    |                        
+                             
+    expected `i32`, found 
+`usize`
+    |
+note: method defined here
+   --> src\detector.rs:38:12
+    |
+ 38 |     pub fn 
+detect(&self, frame_data: 
+&[f32], frame_height: i32, 
+frame_width: i32) -> 
+Result<Vec<Detection>> {
+    |            ^^^^^^      
+                      
+-----------------  
+----------------
+help: you can convert a 
+`usize` to an `i32` and 
+panic if the converted value 
+doesn't fit
+    |
+175 |             match self.
+detector.detect(&processed_da
+ta, (frame_height as 
+usize).try_into().unwrap(), 
+frame_width as usize) {
+    |                        
+                             
+    +                     
++++++++++++++++++++++
+help: you can convert a 
+`usize` to an `i32` and 
+panic if the converted value 
+doesn't fit
+    |
+175 |             match self.
+detector.detect(&processed_da
+ta, frame_height as usize, 
+(frame_width as 
+usize).try_into().unwrap()) {
+    |                        
+                             
+                           + 
+                   
++++++++++++++++++++++
+
+error[E0599]: no method 
+named `get_input_shape` 
+found for reference `&'a 
+APDDetector` in the current 
+scope
+   --> 
+src\processor.rs:235:37
+    |
+235 |         let input_h = s
+elf.detector.get_input_shape(
+).0;
+    |                        
+             ^^^^^^^^^^^^^^^ 
+method not found in `&'a 
+APDDetector`
+
+error[E0599]: no method 
+named `get_input_shape` 
+found for reference `&'a 
+APDDetector` in the current 
+scope
+   --> 
+src\processor.rs:236:37
+    |
+236 |         let input_w = s
+elf.detector.get_input_shape(
+).1;
+    |                        
+             ^^^^^^^^^^^^^^^ 
+method not found in `&'a 
+APDDetector`
+
+error[E0308]: arguments to 
+this method are incorrect
+   --> 
+src\processor.rs:245:40
+    |
+245 |         let detections 
+= self.detector.detect(&proce
+ssed_data, rows, cols)?;
+    |                        
+                ^^^^^^       
+           ----  ---- 
+expected `i32`, found `usize`
+    |                        
+                             
+           |
+    |                        
+                             
+           expected `i32`, 
+found `usize`
+    |
+note: method defined here
+   --> src\detector.rs:38:12
+    |
+ 38 |     pub fn 
+detect(&self, frame_data: 
+&[f32], frame_height: i32, 
+frame_width: i32) -> 
+Result<Vec<Detection>> {
+    |            ^^^^^^      
+                      
+-----------------  
+----------------
+help: you can convert a 
+`usize` to an `i32` and 
+panic if the converted value 
+doesn't fit
+    |
+245 |         let detections 
+= self.detector.detect(&proce
+ssed_data, 
+rows.try_into().unwrap(), 
+cols)?;
+    |                        
+                             
+               
+++++++++++++++++++++
+help: you can convert a 
+`usize` to an `i32` and 
+panic if the converted value 
+doesn't fit
+    |
+245 |         let detections 
+= self.detector.detect(&proce
+ssed_data, rows, 
+cols.try_into().unwrap())?;
+    |                        
+                             
+                     
+++++++++++++++++++++
+
+Some errors have detailed 
+explanations: E0277, E0308, 
+E0599.
+For more information about 
+an error, try `rustc 
+--explain E0277`.
+warning: `apd_detector` (bin 
+"apd_detector") generated 5 
+warnings
+error: could not compile 
+`apd_detector` (bin 
+"apd_detector") due to 9 
+previous errors; 5 warnings 
+emitted

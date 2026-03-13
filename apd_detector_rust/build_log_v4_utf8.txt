@@ -1,0 +1,1099 @@
+﻿MSVC Path: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207
+SDK Version: 10.0.26100.0
+Clang Flags: -isystem "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include" -isystem "C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\ucrt" -isystem "C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared" -isystem "C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um" -isystem "C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\winrt" 
+powershell :    Compiling 
+opencv v0.91.3
+At line:1 char:1
++ powershell 
+-ExecutionPolicy Bypass 
+-File .\build_fix.ps1 > 
+build_log_ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (   Comp  
+  iling opencv v0.91.3:Str   
+ ing) [], RemoteException
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+error: failed to run custom 
+build command for `opencv 
+v0.91.3`
+
+Caused by:
+  process didn't exit 
+successfully: `C:\Magang_Alif
+\Trial\apd_detector_rust\targ
+et\release\build\opencv-277f0
+b7d8e4163a7\build-script-buil
+d` (exit code: 101)
+  --- stdout
+  cargo:rustc-cfg=ocvrs_openc
+v_branch_4
+  cargo:rerun-if-env-changed=
+OPENCV_PACKAGE_NAME
+  cargo:rerun-if-env-changed=
+OPENCV_PKGCONFIG_NAME
+  cargo:rerun-if-env-changed=
+OPENCV_CMAKE_NAME
+  cargo:rerun-if-env-changed=
+OPENCV_CMAKE_BIN
+  cargo:rerun-if-env-changed=
+OPENCV_VCPKG_NAME
+  cargo:rerun-if-env-changed=
+OPENCV_LINK_LIBS
+  cargo:rerun-if-env-changed=
+OPENCV_LINK_PATHS
+  cargo:rerun-if-env-changed=
+OPENCV_INCLUDE_PATHS
+  cargo:rerun-if-env-changed=
+OPENCV_DISABLE_PROBES
+  cargo:rerun-if-env-changed=
+OPENCV_MSVC_CRT
+  cargo:rerun-if-env-changed=
+CMAKE_PREFIX_PATH
+  cargo:rerun-if-env-changed=
+OpenCV_DIR
+  cargo:rerun-if-env-changed=
+PKG_CONFIG_PATH
+  cargo:rerun-if-env-changed=
+VCPKG_ROOT
+  cargo:rerun-if-env-changed=
+VCPKGRS_DYNAMIC
+  cargo:rerun-if-env-changed=
+VCPKGRS_TRIPLET
+  cargo:rerun-if-env-changed=
+OCVRS_DOCS_GENERATE_DIR
+  cargo:rerun-if-env-changed=
+DOCS_RS
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+alphamat.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+aruco.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+bioinspired.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+ccalib.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+core.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+dnn.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+face.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+gapi.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+hdf.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+manual-core.cpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+ocvrs_common.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+photo.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+sfm.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+videoio.hpp
+  cargo:rerun-if-changed=C:\U
+sers\Magang\.cargo\registry\s
+rc\index.crates.io-1949cf8c6b
+5b557f\opencv-0.91.3\src_cpp\
+xfeatures2d.hpp
+  cargo:rerun-if-changed=Carg
+o.toml
+
+  --- stderr
+  === Crate version: 
+Some("0.91.3")
+  === Environment 
+configuration:
+  ===   OPENCV_PACKAGE_NAME 
+= None
+  ===   
+OPENCV_PKGCONFIG_NAME = None
+  ===   OPENCV_CMAKE_NAME = 
+None
+  ===   OPENCV_CMAKE_BIN = 
+None
+  ===   OPENCV_VCPKG_NAME = 
+None
+  ===   OPENCV_LINK_LIBS = 
+Some("opencv_world4100")
+  ===   OPENCV_LINK_PATHS = S
+ome("C:\\opencv\\build\\x64\\
+vc16\\lib")
+  ===   OPENCV_INCLUDE_PATHS 
+= Some("C:\\opencv\\build\\in
+clude")
+  ===   
+OPENCV_DISABLE_PROBES = None
+  ===   OPENCV_MSVC_CRT = 
+None
+  ===   CMAKE_PREFIX_PATH = 
+None
+  ===   OpenCV_DIR = 
+Some("C:\\opencv\\build")
+  ===   PKG_CONFIG_PATH = 
+None
+  ===   VCPKG_ROOT = None
+  ===   VCPKGRS_DYNAMIC = 
+None
+  ===   VCPKGRS_TRIPLET = 
+None
+  ===   
+OCVRS_DOCS_GENERATE_DIR = 
+None
+  ===   DOCS_RS = None
+  ===   PATH = Some("C:\\Maga
+ng_Alif\\Trial\\apd_detector_
+rust\\target\\release;C:\\Mag
+ang_Alif\\Trial\\apd_detector
+_rust\\target\\release\\deps;
+C:\\Users\\Magang\\.rustup\\t
+oolchains\\stable-x86_64-pc-w
+indows-msvc\\lib\\rustlib\\x8
+6_64-pc-windows-msvc\\lib;C:\
+\opencv\\build\\x64\\vc16\\bi
+n;C:\\Program 
+Files\\Microsoft Visual Studi
+o\\2022\\Community\\VC\\Tools
+\\Llvm\\x64\\bin;C:\\opencv\\
+build\\x64\\vc16\\bin;C:\\WIN
+DOWS\\system32;C:\\WINDOWS;C:
+\\WINDOWS\\System32\\Wbem;C:\
+\WINDOWS\\System32\\WindowsPo
+werShell\\v1.0\\;C:\\WINDOWS\
+\System32\\OpenSSH\\;C:\\Prog
+ram Files (x86)\\Microsoft 
+SQL Server\\160\\DTS\\Binn\\;
+C:\\Program Files 
+(x86)\\Microsoft SQL Server\\
+160\\Tools\\Binn\\;C:\\Progra
+m Files\\Microsoft SQL Server
+\\160\\Tools\\Binn\\;C:\\Prog
+ram Files\\Microsoft SQL 
+Server\\Client SDK\\ODBC\\170
+\\Tools\\Binn\\;C:\\Program 
+Files\\Microsoft SQL Server\\
+160\\DTS\\Binn\\;C:\\laragon\
+\bin\\php\\php-8.3;C:\\Progra
+m 
+Files\\Git\\cmd;C:\\Program 
+Files\\nodejs\\;C:\\Program 
+Files\\Microsoft SQL 
+Server\\Client SDK\\ODBC\\110
+\\Tools\\Binn\\;C:\\Program 
+Files (x86)\\Microsoft SQL Se
+rver\\120\\Tools\\Binn\\;C:\\
+Program Files\\Microsoft SQL 
+Server\\120\\Tools\\Binn\\;C:
+\\Program Files\\Microsoft 
+SQL Server\\120\\DTS\\Binn\\;
+C:\\Program Files 
+(x86)\\Windows 
+Kits\\10\\Windows 
+Performance 
+Toolkit\\;C:\\Program Files\\
+CMake\\bin;C:\\Program 
+Files\\Microsoft Visual Studi
+o\\2022\\Community\\VC\\Tools
+\\Llvm\\x64\\bin;C:\\opencv\\
+build;C:\\Users\\Magang\\.car
+go\\bin;C:\\Users\\Magang\\Ap
+pData\\Local\\Programs\\Pytho
+n\\Python313\\Scripts\\;C:\\U
+sers\\Magang\\AppData\\Local\
+\Programs\\Python\\Python313\
+\;C:\\Users\\Magang\\AppData\
+\Local\\Programs\\Python\\Lau
+ncher\\;C:\\Users\\Magang\\Ap
+pData\\Local\\Microsoft\\Wind
+owsApps;C:\\Users\\Magang\\Ap
+pData\\Local\\Programs\\Micro
+soft VS Code\\bin;C:\\Users\\
+Magang\\.local\\bin;C:\\Users
+\\Magang\\AppData\\Local\\Com
+poserSetup\\bin;C:\\Users\\Ma
+gang\\AppData\\Roaming\\Compo
+ser\\vendor\\bin;C:\\Users\\M
+agang\\AppData\\Local\\Progra
+ms\\Antigravity\\bin;C:\\User
+s\\Magang\\.rustup\\toolchain
+s\\stable-x86_64-pc-windows-m
+svc\\bin")
+  === Enabled features:
+  ===   ALPHAMAT
+  ===   ARUCO
+  ===   ARUCO_DETECTOR
+  ===   BARCODE
+  ===   BGSEGM
+  ===   BIOINSPIRED
+  ===   CALIB3D
+  ===   CCALIB
+  ===   CUDAARITHM
+  ===   CUDABGSEGM
+  ===   CUDACODEC
+  ===   CUDAFEATURES2D
+  ===   CUDAFILTERS
+  ===   CUDAIMGPROC
+  ===   CUDAOBJDETECT
+  ===   CUDAOPTFLOW
+  ===   CUDASTEREO
+  ===   CUDAWARPING
+  ===   CVV
+  ===   DEFAULT
+  ===   DNN
+  ===   DNN_SUPERRES
+  ===   DPM
+  ===   FACE
+  ===   FEATURES2D
+  ===   FLANN
+  ===   FREETYPE
+  ===   FUZZY
+  ===   GAPI
+  ===   HDF
+  ===   HFS
+  ===   HIGHGUI
+  ===   IMGCODECS
+  ===   IMGPROC
+  ===   IMG_HASH
+  ===   INTENSITY_TRANSFORM
+  ===   LINE_DESCRIPTOR
+  ===   MCC
+  ===   ML
+  ===   OBJDETECT
+  ===   OPTFLOW
+  ===   OVIS
+  ===   PHASE_UNWRAPPING
+  ===   PHOTO
+  ===   PLOT
+  ===   QUALITY
+  ===   RAPID
+  ===   RGBD
+  ===   SALIENCY
+  ===   SFM
+  ===   SHAPE
+  ===   STEREO
+  ===   STITCHING
+  ===   STRUCTURED_LIGHT
+  ===   SUPERRES
+  ===   SURFACE_MATCHING
+  ===   TEXT
+  ===   TRACKING
+  ===   VIDEO
+  ===   VIDEOIO
+  ===   VIDEOSTAB
+  ===   VIZ
+  ===   WECHAT_QRCODE
+  ===   XFEATURES2D
+  ===   XIMGPROC
+  ===   XOBJDETECT
+  ===   XPHOTO
+  === Detected probe 
+priority based on 
+environment vars: 
+pkg_config: false, cmake: 
+true, vcpkg: false
+  === Probing the OpenCV 
+library in the following 
+order: environment, cmake, 
+pkg_config, vcpkg_cmake, 
+vcpkg
+  === Configuring OpenCV 
+library from the environment:
+  ===   include_paths: 
+C:\opencv\build\include
+  ===   link_paths: 
+C:\opencv\build\x64\vc16\lib
+  ===   link_libs: 
+opencv_world4100
+  === Successfully probed 
+using: environment
+  === OpenCV library 
+configuration: Library {
+      include_paths: [
+          
+"C:\\opencv\\build\\include",
+      ],
+      version: Version {
+          major: 4,
+          minor: 10,
+          patch: 0,
+      },
+      cargo_metadata: [
+          "cargo:rustc-link-s
+earch=C:\\opencv\\build\\x64\
+\vc16\\lib",
+          "cargo:rustc-link-l
+ib=opencv_world4100",
+      ],
+  }
+  === Detected OpenCV module 
+header dir at: C:\opencv\buil
+d\include\opencv2
+  === Found OpenCV version: 
+4.10.0 in headers located 
+at: C:\opencv\build\include
+  === Generating code in: C:\
+Magang_Alif\Trial\apd_detecto
+r_rust\target\release\build\o
+pencv-47b04fc18dd0cfae\out
+  === Placing generated 
+bindings into: C:\Magang_Alif
+\Trial\apd_detector_rust\targ
+et\release\build\opencv-47b04
+fc18dd0cfae\out\opencv
+  === Using OpenCV headers 
+from: C:\opencv\build\include
+  === Clang: clang version 
+19.1.5
+  === Clang command line 
+args: [
+      "-isystemC:\\Program 
+Files\\Microsoft Visual Studi
+o\\2022\\Community\\VC\\Tools
+\\Llvm\\x64\\lib\\clang\\19\\
+include",
+      "-IC:\\opencv\\build\\i
+nclude",
+      "-FC:\\opencv\\build\\i
+nclude",
+      "-IC:\\Users\\Magang\\.
+cargo\\registry\\src\\index.c
+rates.io-1949cf8c6b5b557f\\op
+encv-0.91.3\\src_cpp",
+      "-FC:\\Users\\Magang\\.
+cargo\\registry\\src\\index.c
+rates.io-1949cf8c6b5b557f\\op
+encv-0.91.3\\src_cpp",
+      
+"-DOCVRS_PARSING_HEADERS",
+      
+"-includeocvrs_common.hpp",
+      "-std=c++14",
+  ]
+  === Using environment job 
+server with the the amount 
+of available jobs: 8
+  === Generating 15 modules
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"calib3d" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"core" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"dnn" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"flann" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"gapi" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"features2d" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"highgui" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"imgcodecs" ""
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (11856) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (13556) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (5180) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+
+  thread '<unnamed>' (12164) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: core
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === Running: 
+"C:\\Magang_=== WARNING: 1 
+diagnostic messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (3796) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (16984) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+
+  thread '<unnamed>' (15060) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: dnn
+  A=== WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (5116) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (7976) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  lif\\Trial\\apd_detector_ru
+st\\target\\release\\build\\o
+pencv-277f0b7d8e4163a7\\build
+-script-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"imgproc" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"ml" ""
+
+  thread '<unnamed>' (3508) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: 
+imgcodecs
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"objdetect" ""
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (14980) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+
+  thread '<unnamed>' (5384) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: highgui
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build
+  thread '<unnamed>' (7764) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: 
+features2d
+
+  thread '<unnamed>' (15948) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: calib3d
+  .exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"photo" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"video" ""
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"stitching" ""
+
+  thread '<unnamed>' (1560) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: flann
+
+  thread 'main' (6716) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:11
+8:36:
+  Generator process 
+panicked: Any { .. }
+  === Running: "C:\\Magang_Al
+if\\Trial\\apd_detector_rust\
+\target\\release\\build\\open
+cv-277f0b7d8e4163a7\\build-sc
+ript-build.exe" 
+"C:\\opencv\\build\\include" 
+"C:\\Users\\Magang\\.cargo\\r
+egistry\\src\\index.crates.io
+-1949cf8c6b5b557f\\opencv-0.9
+1.3\\src_cpp" "C:\\Magang_Ali
+f\\Trial\\apd_detector_rust\\
+target\\release\\build\\openc
+v-47b04fc18dd0cfae\\out" 
+"videoio" ""
+
+  thread '<unnamed>' (4128) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: gapi
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (8764) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (12820) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (1304) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (19776) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (1208) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+
+  thread '<unnamed>' (4320) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: imgproc
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (4364) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+
+  thread '<unnamed>' (12404) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: 
+objdetect
+
+  thread '<unnamed>' (13892) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: ml
+  === WARNING: 1 diagnostic 
+messages
+  ===    C:\Users\Magang\.car
+go\registry\src\index.crates.
+io-1949cf8c6b5b557f\opencv-0.
+91.3\src_cpp\ocvrs_common.hpp
+:16:10: fatal error: 
+'memory' file not found
+
+  thread 'main' (6864) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-binding-generator-0.89.1\src
+\generator.rs:402:17:
+  === Errors during header 
+parsing
+  note: run with 
+`RUST_BACKTRACE=1` 
+environment variable to 
+display a backtrace
+
+  thread '<unnamed>' (8224) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: video
+
+  thread '<unnamed>' (16228) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: photo
+
+  thread '<unnamed>' (14044) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: videoio
+
+  thread '<unnamed>' (16852) 
+panicked at C:\Users\Magang\.
+cargo\registry\src\index.crat
+es.io-1949cf8c6b5b557f\opencv
+-0.91.3\build\generator.rs:10
+9:33:
+  Failed to run the bindings 
+generator for module: 
+stitching

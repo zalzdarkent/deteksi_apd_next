@@ -1,0 +1,35 @@
+﻿cargo :    Compiling opencv 
+v0.91.3
+At line:1 char:103
++ ... 
+\VC\Tools\Llvm\x64\bin"; 
+cargo check > 
+build_error_3.txt 2>&1; 
+Get-Co ...
++                            
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (   Comp  
+  iling opencv v0.91.3:Str   
+ ing) [], RemoteException
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+    Checking ort-sys 
+v2.0.0-rc.12
+error: failed to run custom 
+build command for `opencv 
+v0.91.3`
+
+Caused by:
+  process didn't exit 
+successfully: `C:\Magang_Alif
+\Trial\apd_detector_rust\targ
+et\debug\build\opencv-6e13db5
+e3b3557a8\build-script-build`
+ (exit code: 0xc0000135, 
+STATUS_DLL_NOT_FOUND)
+warning: build failed, 
+waiting for other jobs to 
+finish...

@@ -1,0 +1,115 @@
+﻿**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.14.28
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cmd :    Compiling 
+apd_detector v0.1.0 (C:\Magan
+g_Alif\Trial\apd_detector_rus
+t)
+At line:1 char:1
++ cmd /c "call ""C:\Program 
+Files\Microsoft Visual 
+Studio\2022\Communit ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (   Comp  
+  iling ap..._detector_rus   
+ t):String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+warning: unused import: 
+`std::path::PathBuf`
+ --> src\main.rs:2:5
+  |
+2 | use std::path::PathBuf;
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: 
+`#[warn(unused_imports)]` 
+(part of `#[warn(unused)]`) 
+on by default
+
+warning: unused imports: 
+`CV_32F` and `Size`
+ --> src\utils.rs:1:40
+  |
+1 | use 
+opencv::core::{Point, 
+Scalar, Mat, Size, CV_32F};
+  |                          
+              ^^^^  ^^^^^^
+
+error[E0277]: a value of 
+type `Vec<usize>` cannot be 
+built from an iterator over 
+elements of type `i64`
+  --> src\detector.rs:70:66
+   |
+70 |         let shape_vec: 
+Vec<usize> = output_shape.ite
+r().copied().collect();
+   |                         
+                             
+            ^^^^^^^ value of 
+type `Vec<usize>` cannot be 
+built from `std::iter::Iterat
+or<Item=i64>`
+   |
+help: the trait 
+`FromIterator<i64>` is not 
+implemented for `Vec<usize>`
+      but trait 
+`FromIterator<usize>` is 
+implemented for it
+  --> /rustc/4a4ef493e3a1488c
+6e321570238084b38948f6db/libr
+ary\alloc\src\vec\mod.rs:3798
+:0
+   = help: for that trait 
+implementation, expected 
+`usize`, found `i64`
+note: the method call chain 
+might not have had the 
+expected associated types
+  --> src\detector.rs:70:57
+   |
+70 |         let shape_vec: 
+Vec<usize> = output_shape.ite
+r().copied().collect();
+   |                         
+            ------------ 
+------ ^^^^^^^^ 
+`Iterator::Item` changed to 
+`i64` here
+   |                         
+            |            |
+   |                         
+            |            
+`Iterator::Item` is `&i64` 
+here
+   |                         
+            this expression 
+has type `&Shape`
+note: required by a bound in 
+`collect`
+  --> /rustc/4a4ef493e3a1488c
+6e321570238084b38948f6db/libr
+ary\core\src\iter\traits\iter
+ator.rs:2022:4
+
+For more information about 
+this error, try `rustc 
+--explain E0277`.
+warning: `apd_detector` (bin 
+"apd_detector") generated 2 
+warnings
+error: could not compile 
+`apd_detector` (bin 
+"apd_detector") due to 1 
+previous error; 2 warnings 
+emitted

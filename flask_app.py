@@ -7,12 +7,9 @@ from ultralytics import YOLO
 
 app = Flask(__name__)
 
-# Load Model - Ganti ke format ONNX yang sudah di-export
 MODEL_PATH = os.path.join('model', 'yolov26', 'weights.onnx')
-# Gunakan task='detect' untuk memastikan Ultralytics tahu ini model deteksi
 model = YOLO(MODEL_PATH, task='detect')
 
-# Video Samples Directory
 SAMPLES_DIR = 'samples'
 
 def gen_frames(video_name, start_frame=0):
@@ -21,8 +18,7 @@ def gen_frames(video_name, start_frame=0):
     
     if start_frame > 0:
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-    
-    # Get original FPS
+
     fps = cap.get(cv2.CAP_PROP_FPS)
     if fps <= 0: fps = 60
     frame_delay = 1.0 / fps
@@ -34,31 +30,24 @@ def gen_frames(video_name, start_frame=0):
         success, frame = cap.read()
         if not success:
             break
-            
-        # Optimization: Frame Skipping
-        # Jika proses terlalu lambat, kita skip frame untuk mengejar waktu asli (real-time feel)
+
         elapsed = current_time - prev_time
         if elapsed < frame_delay:
-            # Terlalu cepat (jarang terjadi saat inference), tunggu sebentar
             time.sleep(frame_delay - elapsed)
         elif elapsed > frame_delay * 2:
-            # Terlalu lambat, skip frame berikutnya
             skip_count = int(elapsed / frame_delay) - 1
-            for _ in range(min(skip_count, 5)): # Max skip 5 frames agar tidak patah-patah parah
+            for _ in range(min(skip_count, 5)):
                 cap.grab()
         
         prev_time = time.time()
 
-        # Run YOLOv11 inference dengan opsi optimasi
-        # imgsz=640 sesuai saat export, half=False karena CPU
-        results = model.predict(frame, conf=0.4, imgsz=640, verbose=False, half=False)
+        results = model.predict(frame, conf=0.5, imgsz=640, verbose=False, half=False)
         detections = results[0].boxes
         
         persons = []
         helmets = []
         others = []
         
-        # Ekstraksi data secara efisien
         if len(detections) > 0:
             boxes = detections.xyxy.cpu().numpy()
             clss = detections.cls.cpu().numpy()
@@ -69,12 +58,11 @@ def gen_frames(video_name, start_frame=0):
                 coords = boxes[i].tolist()
                 conf = float(confs[i])
                 
-                if cls == 2: # Person
+                if cls == 2: 
                     persons.append({'box': coords, 'conf': conf, 'has_helm': False})
-                elif cls == 1: # Helm
+                elif cls == 1:
                     helmets.append({'box': coords, 'conf': conf, 'used': False})
-                else: # Others
-                    # Gunakan model.names untuk mapping nama yang benar
+                else: 
                     name = model.names[cls] if cls in model.names else f"ID {cls}"
                     others.append({'box': coords, 'conf': conf, 'name': name})
                     

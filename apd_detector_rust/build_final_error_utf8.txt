@@ -1,0 +1,769 @@
+﻿**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.14.28
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cmd :    Compiling 
+apd_detector v0.1.0 (C:\Magan
+g_Alif\Trial\apd_detector_rus
+t)
+At line:1 char:1
++ cmd /c "call ""C:\Program 
+Files\Microsoft Visual 
+Studio\2022\Communit ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (   Comp  
+  iling ap..._detector_rus   
+ t):String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+error[E0432]: unresolved 
+imports `ort::Session`, 
+`ort::SessionBuilder`, 
+`ort::GraphOptimizationLevel`
+ --> src\detector.rs:5:11
+  |
+5 | use ort::{Session, 
+SessionBuilder, 
+GraphOptimizationLevel};
+  |           ^^^^^^^  
+^^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^^^^^^^^^ no 
+`GraphOptimizationLevel` in 
+the root
+  |           |        |
+  |           |        no 
+`SessionBuilder` in the root
+  |           no `Session` 
+in the root
+  |           help: a 
+similar name exists in the 
+module (notice the 
+capitalization): `session`
+  |
+  = help: consider importing 
+this struct instead:
+          
+ort::session::Session
+  = help: consider importing 
+this struct instead:
+          ort::session::build
+er::SessionBuilder
+  = help: consider importing 
+this enum instead:
+          ort::session::build
+er::GraphOptimizationLevel
+
+warning: unused import: 
+`std::path::PathBuf`
+ --> src\main.rs:2:5
+  |
+2 | use std::path::PathBuf;
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: 
+`#[warn(unused_imports)]` 
+(part of `#[warn(unused)]`) 
+on by default
+
+warning: unused import: 
+`std::path::Path`
+ --> src\detector.rs:6:5
+  |
+6 | use std::path::Path;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: 
+`save_detections_json`
+ --> src\processor.rs:3:55
+  |
+3 | use crate::utils::{draw_d
+etections, preprocess_frame, 
+save_detections_json};
+  |                          
+                             
+^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method 
+named `map_err` found for 
+type `bool` in the current 
+scope
+  --> src\detector.rs:22:14
+   |
+20 | /         ort::init()
+21 | |             .commit()
+22 | |             
+.map_err(|e| APDDetectorError
+::OnnxRuntimeError(format!("F
+ailed to init ONNX: {}", 
+e)))?;
+   | |             -^^^^^^^ 
+method not found in `bool`
+   | |_____________|
+   |
+
+error[E0599]: no method 
+named `is_opened` found for 
+struct `VideoCapture` in the 
+current scope
+    --> 
+src\processor.rs:96:17
+     |
+  96 |         if 
+!cap.is_opened()? {
+     |                 
+^^^^^^^^^ method not found 
+in `VideoCapture`
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:14
+03:6
+     |
+1403 |         fn 
+is_opened(&self) -> 
+Result<bool> {
+     |            --------- 
+the method is available for 
+`VideoCapture` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: trait 
+`VideoCaptureTraitConst` 
+which provides `is_opened` 
+is implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoCaptureTraitConst;
+     |
+
+error[E0599]: no method 
+named `get` found for struct 
+`VideoCapture` in the 
+current scope
+    --> 
+src\processor.rs:104:31
+     |
+ 104 |         let 
+frame_width = cap.get(CAP_PRO
+P_FRAME_WIDTH)? as i32;
+     |                       
+        ^^^
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:14
+31:6
+     |
+1431 |         fn get(&self, 
+prop_id: i32) -> Result<f64> 
+{
+     |            --- the 
+method is available for 
+`VideoCapture` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: there is a method 
+`set` with a similar name, 
+but with different arguments
+    --> C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:17
+42:3
+     |
+1742 |         fn set(&mut 
+self, prop_id: i32, value: 
+f64) -> Result<bool> {
+     |         ^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
+help: trait 
+`VideoCaptureTraitConst` 
+which provides `get` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoCaptureTraitConst;
+     |
+
+error[E0599]: no method 
+named `get` found for struct 
+`VideoCapture` in the 
+current scope
+    --> 
+src\processor.rs:105:32
+     |
+ 105 |         let 
+frame_height = cap.get(CAP_PR
+OP_FRAME_HEIGHT)? as i32;
+     |                       
+         ^^^
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:14
+31:6
+     |
+1431 |         fn get(&self, 
+prop_id: i32) -> Result<f64> 
+{
+     |            --- the 
+method is available for 
+`VideoCapture` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: there is a method 
+`set` with a similar name, 
+but with different arguments
+    --> C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:17
+42:3
+     |
+1742 |         fn set(&mut 
+self, prop_id: i32, value: 
+f64) -> Result<bool> {
+     |         ^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
+help: trait 
+`VideoCaptureTraitConst` 
+which provides `get` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoCaptureTraitConst;
+     |
+
+error[E0599]: no method 
+named `get` found for struct 
+`VideoCapture` in the 
+current scope
+    --> 
+src\processor.rs:106:23
+     |
+ 106 |         let fps = 
+cap.get(CAP_PROP_FPS)? as 
+f64;
+     |                       
+^^^
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:14
+31:6
+     |
+1431 |         fn get(&self, 
+prop_id: i32) -> Result<f64> 
+{
+     |            --- the 
+method is available for 
+`VideoCapture` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: there is a method 
+`set` with a similar name, 
+but with different arguments
+    --> C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:17
+42:3
+     |
+1742 |         fn set(&mut 
+self, prop_id: i32, value: 
+f64) -> Result<bool> {
+     |         ^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
+help: trait 
+`VideoCaptureTraitConst` 
+which provides `get` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoCaptureTraitConst;
+     |
+
+error[E0599]: no method 
+named `get` found for struct 
+`VideoCapture` in the 
+current scope
+    --> 
+src\processor.rs:107:32
+     |
+ 107 |         let 
+total_frames = cap.get(CAP_PR
+OP_FRAME_COUNT)? as i32;
+     |                       
+         ^^^
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:14
+31:6
+     |
+1431 |         fn get(&self, 
+prop_id: i32) -> Result<f64> 
+{
+     |            --- the 
+method is available for 
+`VideoCapture` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: there is a method 
+`set` with a similar name, 
+but with different arguments
+    --> C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:17
+42:3
+     |
+1742 |         fn set(&mut 
+self, prop_id: i32, value: 
+f64) -> Result<bool> {
+     |         ^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
+help: trait 
+`VideoCaptureTraitConst` 
+which provides `get` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoCaptureTraitConst;
+     |
+
+error[E0599]: no method 
+named `is_opened` found for 
+struct `VideoWriter` in the 
+current scope
+    --> 
+src\processor.rs:143:20
+     |
+ 143 |         if 
+!writer.is_opened()? {
+     |                    
+^^^^^^^^^ method not found 
+in `VideoWriter`
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:20
+60:6
+     |
+2060 |         fn 
+is_opened(&self) -> 
+Result<bool> {
+     |            --------- 
+the method is available for 
+`VideoWriter` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: trait 
+`VideoWriterTraitConst` 
+which provides `is_opened` 
+is implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoWriterTraitConst;
+     |
+
+error[E0599]: no method 
+named `read` found for 
+struct `VideoCapture` in the 
+current scope
+    --> 
+src\processor.rs:157:21
+     |
+ 157 |             if 
+!cap.read(&mut frame)? {
+     |                     
+^^^^ method not found in 
+`VideoCapture`
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:17
+21:6
+     |
+1721 |         fn read(&mut 
+self, image: &mut impl 
+ToOutputArray) -> 
+Result<bool> {
+     |            ---- the 
+method is available for 
+`VideoCapture` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: trait 
+`VideoCaptureTrait` which 
+provides `read` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoCaptureTrait;
+     |
+
+error[E0599]: no method 
+named `write` found for 
+struct `VideoWriter` in the 
+current scope
+    --> 
+src\processor.rs:187:28
+     |
+ 187 |                     wr
+iter.write(&output_frame).map
+_err(|e| {
+     |                       
+     ^^^^^ method not found 
+in `VideoWriter`
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:22
+48:6
+     |
+2248 |         fn write(&mut 
+self, image: &impl 
+ToInputArray) -> Result<()> {
+     |            ----- the 
+method is available for 
+`VideoWriter` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: trait 
+`VideoWriterTrait` which 
+provides `write` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoWriterTrait;
+     |
+
+error[E0599]: no method 
+named `write` found for 
+struct `VideoWriter` in the 
+current scope
+    --> 
+src\processor.rs:211:28
+     |
+ 211 |                     wr
+iter.write(&frame).map_err(|e
+| {
+     |                       
+     ^^^^^ method not found 
+in `VideoWriter`
+     |
+    ::: C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/videoio.rs:22
+48:6
+     |
+2248 |         fn write(&mut 
+self, image: &impl 
+ToInputArray) -> Result<()> {
+     |            ----- the 
+method is available for 
+`VideoWriter` here
+     |
+     = help: items from 
+traits can only be used if 
+the trait is in scope
+help: trait 
+`VideoWriterTrait` which 
+provides `write` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+     |
+   1 + use opencv::prelude::V
+ideoWriterTrait;
+     |
+
+error[E0599]: no method 
+named `rows` found for 
+reference `&Mat` in the 
+current scope
+     --> 
+src\processor.rs:237:26
+      |
+  237 |         let rows = 
+frame.rows() as usize;
+      |                      
+    ^^^^
+      |
+      = help: items from 
+traits can only be used if 
+the trait is in scope
+help: there is a method 
+`row` with a similar name, 
+but with different arguments
+     --> C:\Magang_Alif\Trial
+\apd_detector_rust\target\rel
+ease\build\opencv-47b04fc18dd
+0cfae\out/opencv/core.rs:1678
+0:3
+      |
+16780 |         fn 
+row(&self, y: i32) -> 
+Result<BoxedRef<core::Mat>> {
+      |         ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
+help: trait `MatTraitConst` 
+which provides `rows` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+      |
+    1 + use opencv::prelude::
+MatTraitConst;
+      |
+
+error[E0599]: no method 
+named `cols` found for 
+reference `&Mat` in the 
+current scope
+     --> 
+src\processor.rs:238:26
+      |
+  238 |         let cols = 
+frame.cols() as usize;
+      |                      
+    ^^^^
+      |
+      = help: items from 
+traits can only be used if 
+the trait is in scope
+help: there is a method 
+`col` with a similar name, 
+but with different arguments
+     --> C:\Magang_Alif\Trial
+\apd_detector_rust\target\rel
+ease\build\opencv-47b04fc18dd
+0cfae\out/opencv/core.rs:1679
+7:3
+      |
+16797 |         fn 
+col(&self, x: i32) -> 
+Result<BoxedRef<core::Mat>> {
+      |         ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
+help: trait `MatTraitConst` 
+which provides `cols` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+      |
+    1 + use opencv::prelude::
+MatTraitConst;
+      |
+
+error[E0308]: mismatched 
+types
+    --> src\utils.rs:137:85
+     |
+ 137 |         let text_size 
+= imgproc::get_text_size(&lab
+el, font, font_scale, 
+thickness, &baseline)?;
+     |                       
+  ----------------------     
+                             
+    ^^^^^^^^^ types differ 
+in mutability
+     |                       
+  |
+     |                       
+  arguments to this function 
+are incorrect
+     |
+     = note: expected 
+mutable reference `&mut i32`
+                        
+found reference `&{integer}`
+note: function defined here
+    --> C:\Magang_Alif\Trial\
+apd_detector_rust\target\rele
+ase\build\opencv-47b04fc18dd0
+cfae\out/opencv/imgproc.rs:84
+90:9
+     |
+8490 |     pub fn 
+get_text_size(text: &str, 
+font_face: i32, font_scale: 
+f64, thickness: i32, 
+base_line: &mut i32) -> 
+Result<core::Size> {
+     |            
+^^^^^^^^^^^^^
+
+error[E0599]: no method 
+named `convert_to` found for 
+struct `Mat` in the current 
+scope
+     --> src\utils.rs:193:9
+      |
+  193 |     
+rgb.convert_to(&mut 
+float_mat, CV_32F, 1.0 / 
+255.0, 0.0)?;
+      |         ^^^^^^^^^^
+      |
+     ::: C:\Magang_Alif\Trial
+\apd_detector_rust\target\rel
+ease\build\opencv-47b04fc18dd
+0cfae\out/opencv/core.rs:1707
+4:6
+      |
+17074 |         fn 
+convert_to(&self, m: &mut 
+impl ToOutputArray, rtype: 
+i32, alpha: f64, beta: f64) 
+-> Result<()> {
+      |            
+---------- the method is 
+available for `Mat` here
+      |
+      = help: items from 
+traits can only be used if 
+the trait is in scope
+help: there is a method 
+`convert_to_def` with a 
+similar name, but with 
+different arguments
+     --> C:\Magang_Alif\Trial
+\apd_detector_rust\target\rel
+ease\build\opencv-47b04fc18dd
+0cfae\out/opencv/core.rs:1710
+2:3
+      |
+17102 |         fn 
+convert_to_def(&self, m: 
+&mut impl ToOutputArray, 
+rtype: i32) -> Result<()> {
+      |         ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
+help: trait `MatTraitConst` 
+which provides `convert_to` 
+is implemented but not in 
+scope; perhaps you want to 
+import it
+      |
+    1 + use opencv::prelude::
+MatTraitConst;
+      |
+
+error[E0599]: no method 
+named `data_bytes` found for 
+struct `Mat` in the current 
+scope
+   --> src\utils.rs:196:26
+    |
+196 |     let data = 
+float_mat.data_bytes()?;
+    |                        
+  ^^^^^^^^^^
+    |
+   ::: C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\opencv-0.91
+.3\src\manual\core\mat.rs:492
+:5
+    |
+492 |     fn 
+data_bytes(&self) -> 
+Result<&[u8]> {
+    |        ---------- the 
+method is available for 
+`Mat` here
+    |
+    = help: items from 
+traits can only be used if 
+the trait is in scope
+help: trait 
+`MatTraitConstManual` which 
+provides `data_bytes` is 
+implemented but not in 
+scope; perhaps you want to 
+import it
+    |
+  1 + use opencv::prelude::Ma
+tTraitConstManual;
+    |
+help: there is a method 
+`data_bytes_mut` with a 
+similar name
+    |
+196 |     let data = 
+float_mat.data_bytes_mut()?;
+    |                        
+            ++++
+
+Some errors have detailed 
+explanations: E0308, E0432, 
+E0599.
+For more information about 
+an error, try `rustc 
+--explain E0308`.
+warning: `apd_detector` (bin 
+"apd_detector") generated 3 
+warnings
+error: could not compile 
+`apd_detector` (bin 
+"apd_detector") due to 16 
+previous errors; 3 warnings 
+emitted

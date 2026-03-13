@@ -1,0 +1,266 @@
+﻿**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.14.28
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cmd :    Compiling 
+apd_detector v0.1.0 (C:\Magan
+g_Alif\Trial\apd_detector_rus
+t)
+At line:1 char:1
++ cmd /c "call ""C:\Program 
+Files\Microsoft Visual 
+Studio\2022\Communit ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (   Comp  
+  iling ap..._detector_rus   
+ t):String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+warning: unused import: 
+`std::path::PathBuf`
+ --> src\main.rs:2:5
+  |
+2 | use std::path::PathBuf;
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: 
+`#[warn(unused_imports)]` 
+(part of `#[warn(unused)]`) 
+on by default
+
+warning: unused imports: 
+`CV_32F` and `Size`
+ --> src\utils.rs:1:40
+  |
+1 | use 
+opencv::core::{Point, 
+Scalar, Mat, Size, CV_32F};
+  |                          
+              ^^^^  ^^^^^^
+
+error[E0616]: field `inputs` 
+of struct `Session` is 
+private
+  --> src\detector.rs:54:39
+   |
+54 |         let input_name 
+= self.session.inputs[0].name
+().to_string();
+   |                         
+              ^^^^^^ private 
+field
+   |
+help: a method `inputs` also 
+exists, call it with 
+parentheses
+   |
+54 |         let input_name 
+= self.session.inputs()[0].na
+me().to_string();
+   |                         
+                    ++
+
+error[E0271]: type mismatch 
+resolving `<Shape as 
+ShapeBuilder>::Dim == 
+Dim<IxDynImpl>`
+  --> src\detector.rs:70:52
+   |
+70 |         let 
+output_tensor = ArrayViewD::f
+rom_shape(output_shape.clone(
+), output_data)
+   |                         
+    ---------------------- 
+^^^^^^^^^^^^^^^^^^^^ 
+expected `Dim<IxDynImpl>`, 
+found `Shape`
+   |                         
+    |
+   |                         
+    required by a bound 
+introduced by this call
+   |
+   = note: expected struct 
+`Dim<IxDynImpl>`
+              found struct 
+`ort::value::Shape`
+   = note: required for `Stri
+deShape<Dim<IxDynImpl>>` to 
+implement 
+`From<ort::value::Shape>`
+   = note: required for 
+`ort::value::Shape` to 
+implement `Into<StrideShape<D
+im<IxDynImpl>>>`
+note: required by a bound in 
+`ndarray::impl_views::constru
+ctors::<impl 
+ArrayBase<ViewRepr<&'a A>, 
+D>>::from_shape`
+  --> C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ndarray-0.15
+.6\src\impl_views\constructor
+s.rs:50:13
+   |
+48 |     pub fn 
+from_shape<Sh>(shape: Sh, 
+xs: &'a [A]) -> Result<Self, 
+ShapeError>
+   |            ---------- 
+required by a bound in this 
+associated function
+49 |     where
+50 |         Sh: 
+Into<StrideShape<D>>,
+   |             
+^^^^^^^^^^^^^^^^^^^^ 
+required by this bound in `nd
+array::impl_views::constructo
+rs::<impl 
+ArrayBase<ViewRepr<&A>, 
+D>>::from_shape`
+
+error[E0277]: the trait 
+bound `ort::value::Shape: Int
+o<StrideShape<Dim<IxDynImpl>>
+>` is not satisfied
+  --> src\detector.rs:70:52
+   |
+70 |         let 
+output_tensor = ArrayViewD::f
+rom_shape(output_shape.clone(
+), output_data)
+   |                         
+    ---------------------- 
+^^^^^^^^^^^^^^^^^^^^ the 
+trait `Dimension` is not 
+implemented for 
+`ort::value::Shape`
+   |                         
+    |
+   |                         
+    required by a bound 
+introduced by this call
+   |
+note: there are multiple 
+different versions of crate 
+`ndarray` in the dependency 
+graph
+  --> C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ndarray-0.15
+.6\src\dimension\dimension_tr
+ait.rs:31:1
+   |
+31 | / pub trait Dimension:
+32 | |     Clone
+33 | |     + Eq
+34 | |     + Debug
+...  |
+59 | |     + DimAdd<Ix1, 
+Output = <Self as 
+Dimension>::Larger>
+60 | |     + DimAdd<IxDyn, 
+Output = IxDyn>
+   | |_______________________
+____________^ this is the 
+expected trait
+   |
+  ::: C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ndarray-0.17
+.2\src\dimension\dimension_tr
+ait.rs:32:1
+   |
+32 | / pub trait Dimension:
+33 | |     Clone
+34 | |     + Eq
+35 | |     + Debug
+...  |
+60 | |     + DimAdd<Ix1, 
+Output = <Self as 
+Dimension>::Larger>
+61 | |     + DimAdd<IxDyn, 
+Output = IxDyn>
+   | |_______________________
+____________- this is the 
+trait that was imported
+   = help: you can use 
+`cargo tree` to explore your 
+dependency tree
+   = help: the following 
+other types implement trait 
+`Dimension`:
+             Dim<IxDynImpl>
+             Dim<[usize; 0]>
+             Dim<[usize; 1]>
+             Dim<[usize; 2]>
+             Dim<[usize; 3]>
+             Dim<[usize; 4]>
+             Dim<[usize; 5]>
+             Dim<[usize; 6]>
+   = note: required for 
+`ort::value::Shape` to 
+implement `IntoDimension`
+   = note: required for 
+`ort::value::Shape` to 
+implement `ShapeBuilder`
+   = note: required for `Stri
+deShape<Dim<IxDynImpl>>` to 
+implement 
+`From<ort::value::Shape>`
+   = note: required for 
+`ort::value::Shape` to 
+implement `Into<StrideShape<D
+im<IxDynImpl>>>`
+note: required by a bound in 
+`ndarray::impl_views::constru
+ctors::<impl 
+ArrayBase<ViewRepr<&'a A>, 
+D>>::from_shape`
+  --> C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ndarray-0.15
+.6\src\impl_views\constructor
+s.rs:50:13
+   |
+48 |     pub fn 
+from_shape<Sh>(shape: Sh, 
+xs: &'a [A]) -> Result<Self, 
+ShapeError>
+   |            ---------- 
+required by a bound in this 
+associated function
+49 |     where
+50 |         Sh: 
+Into<StrideShape<D>>,
+   |             
+^^^^^^^^^^^^^^^^^^^^ 
+required by this bound in `nd
+array::impl_views::constructo
+rs::<impl 
+ArrayBase<ViewRepr<&A>, 
+D>>::from_shape`
+
+Some errors have detailed 
+explanations: E0271, E0277, 
+E0616.
+For more information about 
+an error, try `rustc 
+--explain E0271`.
+warning: `apd_detector` (bin 
+"apd_detector") generated 2 
+warnings
+error: could not compile 
+`apd_detector` (bin 
+"apd_detector") due to 3 
+previous errors; 2 warnings 
+emitted

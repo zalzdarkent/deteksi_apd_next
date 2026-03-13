@@ -1,0 +1,902 @@
+﻿**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.14.28
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cmd :    Compiling 
+apd_detector v0.1.0 (C:\Magan
+g_Alif\Trial\apd_detector_rus
+t)
+At line:1 char:1
++ cmd /c "call ""C:\Program 
+Files\Microsoft Visual 
+Studio\2022\Communit ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (   Comp  
+  iling ap..._detector_rus   
+ t):String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+warning: unused import: 
+`std::path::PathBuf`
+ --> src\main.rs:2:5
+  |
+2 | use std::path::PathBuf;
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: 
+`#[warn(unused_imports)]` 
+(part of `#[warn(unused)]`) 
+on by default
+
+warning: unused import: 
+`std::path::Path`
+ --> src\detector.rs:7:5
+  |
+7 | use std::path::Path;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: 
+`save_detections_json`
+ --> src\processor.rs:3:55
+  |
+3 | use crate::utils::{draw_d
+etections, preprocess_frame, 
+save_detections_json};
+  |                          
+                             
+^^^^^^^^^^^^^^^^^^^^
+
+error[E0277]: `?` couldn't 
+convert the error: 
+`NonNull<OrtSessionOptions>: 
+Sync` is not satisfied
+   --> src\detector.rs:26:66
+    |
+ 26 |             .with_optim
+ization_level(GraphOptimizati
+onLevel::All)?
+    |              ----------
+-----------------------------
+-------------^ 
+`NonNull<OrtSessionOptions>` 
+cannot be shared between 
+threads safely
+    |              |
+    |              this 
+can't be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+    |
+    = help: within `builder::
+SessionOptionsPointer`, the 
+trait `Sync` is not 
+implemented for 
+`NonNull<OrtSessionOptions>`
+    = note: the question 
+mark operation (`?`) 
+implicitly performs a 
+conversion on the error 
+value using the `From` trait
+note: required because it 
+appears within the type `buil
+der::SessionOptionsPointer`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:251:19
+    |
+251 | pub(crate) struct Sessi
+onOptionsPointer(NonNull<ort_
+sys::OrtSessionOptions>);
+    |                   
+^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Arc
+<builder::SessionOptionsPoint
+er>` to implement `Send`
+note: required because it 
+appears within the type 
+`SessionBuilder`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:71:12
+    |
+ 71 | pub struct 
+SessionBuilder {
+    |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\error.rs:75:12
+    |
+ 75 | pub struct Error<R = 
+()> {
+    |            ^^^^^
+    = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: `?` couldn't 
+convert the error: 
+`NonNull<OrtSessionOptions>: 
+Send` is not satisfied
+   --> src\detector.rs:26:66
+    |
+ 26 |             .with_optim
+ization_level(GraphOptimizati
+onLevel::All)?
+    |              ----------
+-----------------------------
+-------------^ 
+`NonNull<OrtSessionOptions>` 
+cannot be sent between 
+threads safely
+    |              |
+    |              this 
+can't be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+    |
+    = help: within `builder::
+SessionOptionsPointer`, the 
+trait `Send` is not 
+implemented for 
+`NonNull<OrtSessionOptions>`
+    = note: the question 
+mark operation (`?`) 
+implicitly performs a 
+conversion on the error 
+value using the `From` trait
+note: required because it 
+appears within the type `buil
+der::SessionOptionsPointer`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:251:19
+    |
+251 | pub(crate) struct Sessi
+onOptionsPointer(NonNull<ort_
+sys::OrtSessionOptions>);
+    |                   
+^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Arc
+<builder::SessionOptionsPoint
+er>` to implement `Send`
+note: required because it 
+appears within the type 
+`SessionBuilder`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:71:12
+    |
+ 71 | pub struct 
+SessionBuilder {
+    |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\error.rs:75:12
+    |
+ 75 | pub struct Error<R = 
+()> {
+    |            ^^^^^
+    = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: `?` couldn't 
+convert the error: `(dyn 
+std::any::Any + 'static): 
+Sync` is not satisfied
+  --> src\detector.rs:26:66
+   |
+26 |             .with_optimi
+zation_level(GraphOptimizatio
+nLevel::All)?
+   |              -----------
+-----------------------------
+------------^ `(dyn 
+std::any::Any + 'static)` 
+cannot be shared between 
+threads safely
+   |              |
+   |              this can't 
+be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+   |
+   = help: the trait `Sync` 
+is not implemented for `(dyn 
+std::any::Any + 'static)`
+   = note: the question mark 
+operation (`?`) implicitly 
+performs a conversion on the 
+error value using the `From` 
+trait
+   = note: required for 
+`Arc<(dyn std::any::Any + 
+'static)>` to implement 
+`Send`
+note: required because it 
+appears within the type 
+`Option<Arc<(dyn 
+std::any::Any + 'static)>>`
+  --> /rustc/4a4ef493e3a1488c
+6e321570238084b38948f6db/libr
+ary\core\src\option.rs:600:9
+note: required because it 
+appears within the type 
+`SessionBuilder`
+  --> C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ort-2.0.0-rc
+.12\src\session\builder\mod.r
+s:71:12
+   |
+71 | pub struct 
+SessionBuilder {
+   |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+  --> C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ort-2.0.0-rc
+.12\src\error.rs:75:12
+   |
+75 | pub struct Error<R = 
+()> {
+   |            ^^^^^
+   = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: `?` couldn't 
+convert the error: `(dyn 
+std::any::Any + 'static): 
+Send` is not satisfied
+  --> src\detector.rs:26:66
+   |
+26 |             .with_optimi
+zation_level(GraphOptimizatio
+nLevel::All)?
+   |              -----------
+-----------------------------
+------------^ `(dyn 
+std::any::Any + 'static)` 
+cannot be sent between 
+threads safely
+   |              |
+   |              this can't 
+be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+   |
+   = help: the trait `Send` 
+is not implemented for `(dyn 
+std::any::Any + 'static)`
+   = note: the question mark 
+operation (`?`) implicitly 
+performs a conversion on the 
+error value using the `From` 
+trait
+   = note: required for 
+`Arc<(dyn std::any::Any + 
+'static)>` to implement 
+`Send`
+note: required because it 
+appears within the type 
+`Option<Arc<(dyn 
+std::any::Any + 'static)>>`
+  --> /rustc/4a4ef493e3a1488c
+6e321570238084b38948f6db/libr
+ary\core\src\option.rs:600:9
+note: required because it 
+appears within the type 
+`SessionBuilder`
+  --> C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ort-2.0.0-rc
+.12\src\session\builder\mod.r
+s:71:12
+   |
+71 | pub struct 
+SessionBuilder {
+   |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+  --> C:\Users\Magang\.cargo\
+registry\src\index.crates.io-
+1949cf8c6b5b557f\ort-2.0.0-rc
+.12\src\error.rs:75:12
+   |
+75 | pub struct Error<R = 
+()> {
+   |            ^^^^^
+   = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: `?` couldn't 
+convert the error: 
+`NonNull<OrtMemoryInfo>: 
+Sync` is not satisfied
+   --> src\detector.rs:26:66
+    |
+ 26 |             .with_optim
+ization_level(GraphOptimizati
+onLevel::All)?
+    |              ----------
+-----------------------------
+-------------^ 
+`NonNull<OrtMemoryInfo>` 
+cannot be shared between 
+threads safely
+    |              |
+    |              this 
+can't be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+    |
+    = help: within 
+`MemoryInfo`, the trait 
+`Sync` is not implemented 
+for `NonNull<OrtMemoryInfo>`
+    = note: the question 
+mark operation (`?`) 
+implicitly performs a 
+conversion on the error 
+value using the `From` trait
+note: required because it 
+appears within the type 
+`MemoryInfo`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\memory.rs:376:12
+    |
+376 | pub struct MemoryInfo {
+    |            ^^^^^^^^^^
+    = note: required for 
+`Arc<MemoryInfo>` to 
+implement `Send`
+note: required because it 
+appears within the type 
+`Option<Arc<MemoryInfo>>`
+   --> /rustc/4a4ef493e3a1488
+c6e321570238084b38948f6db/lib
+rary\core\src\option.rs:600:9
+note: required because it 
+appears within the type 
+`SessionBuilder`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:71:12
+    |
+ 71 | pub struct 
+SessionBuilder {
+    |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\error.rs:75:12
+    |
+ 75 | pub struct Error<R = 
+()> {
+    |            ^^^^^
+    = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: `?` couldn't 
+convert the error: 
+`NonNull<OrtMemoryInfo>: 
+Send` is not satisfied
+   --> src\detector.rs:26:66
+    |
+ 26 |             .with_optim
+ization_level(GraphOptimizati
+onLevel::All)?
+    |              ----------
+-----------------------------
+-------------^ 
+`NonNull<OrtMemoryInfo>` 
+cannot be sent between 
+threads safely
+    |              |
+    |              this 
+can't be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+    |
+    = help: within 
+`MemoryInfo`, the trait 
+`Send` is not implemented 
+for `NonNull<OrtMemoryInfo>`
+    = note: the question 
+mark operation (`?`) 
+implicitly performs a 
+conversion on the error 
+value using the `From` trait
+note: required because it 
+appears within the type 
+`MemoryInfo`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\memory.rs:376:12
+    |
+376 | pub struct MemoryInfo {
+    |            ^^^^^^^^^^
+    = note: required for 
+`Arc<MemoryInfo>` to 
+implement `Send`
+note: required because it 
+appears within the type 
+`Option<Arc<MemoryInfo>>`
+   --> /rustc/4a4ef493e3a1488
+c6e321570238084b38948f6db/lib
+rary\core\src\option.rs:600:9
+note: required because it 
+appears within the type 
+`SessionBuilder`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:71:12
+    |
+ 71 | pub struct 
+SessionBuilder {
+    |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\error.rs:75:12
+    |
+ 75 | pub struct Error<R = 
+()> {
+    |            ^^^^^
+    = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: `?` couldn't 
+convert the error: 
+`NonNull<OrtCustomOpDomain>: 
+Sync` is not satisfied
+   --> src\detector.rs:26:66
+    |
+ 26 |             .with_optim
+ization_level(GraphOptimizati
+onLevel::All)?
+    |              ----------
+-----------------------------
+-------------^ 
+`NonNull<OrtCustomOpDomain>` 
+cannot be shared between 
+threads safely
+    |              |
+    |              this 
+can't be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+    |
+    = help: within 
+`OperatorDomain`, the trait 
+`Sync` is not implemented 
+for 
+`NonNull<OrtCustomOpDomain>`
+    = note: the question 
+mark operation (`?`) 
+implicitly performs a 
+conversion on the error 
+value using the `From` trait
+note: required because it 
+appears within the type 
+`OperatorDomain`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\operator\mod.rs:122:
+12
+    |
+122 | pub struct 
+OperatorDomain {
+    |            
+^^^^^^^^^^^^^^
+    = note: required for 
+`Arc<OperatorDomain>` to 
+implement `Send`
+    = note: 1 redundant 
+requirement hidden
+    = note: required for `sma
+llvec::SmallVec<[Arc<Operator
+Domain>; 1]>` to implement 
+`Send`
+note: required because it 
+appears within the type 
+`SessionBuilder`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:71:12
+    |
+ 71 | pub struct 
+SessionBuilder {
+    |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\error.rs:75:12
+    |
+ 75 | pub struct Error<R = 
+()> {
+    |            ^^^^^
+    = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: `?` couldn't 
+convert the error: 
+`NonNull<OrtCustomOpDomain>: 
+Send` is not satisfied
+   --> src\detector.rs:26:66
+    |
+ 26 |             .with_optim
+ization_level(GraphOptimizati
+onLevel::All)?
+    |              ----------
+-----------------------------
+-------------^ 
+`NonNull<OrtCustomOpDomain>` 
+cannot be sent between 
+threads safely
+    |              |
+    |              this 
+can't be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+    |
+    = help: within 
+`OperatorDomain`, the trait 
+`Send` is not implemented 
+for 
+`NonNull<OrtCustomOpDomain>`
+    = note: the question 
+mark operation (`?`) 
+implicitly performs a 
+conversion on the error 
+value using the `From` trait
+note: required because it 
+appears within the type 
+`OperatorDomain`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\operator\mod.rs:122:
+12
+    |
+122 | pub struct 
+OperatorDomain {
+    |            
+^^^^^^^^^^^^^^
+    = note: required for 
+`Arc<OperatorDomain>` to 
+implement `Send`
+    = note: 1 redundant 
+requirement hidden
+    = note: required for `sma
+llvec::SmallVec<[Arc<Operator
+Domain>; 1]>` to implement 
+`Send`
+note: required because it 
+appears within the type 
+`SessionBuilder`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:71:12
+    |
+ 71 | pub struct 
+SessionBuilder {
+    |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\error.rs:75:12
+    |
+ 75 | pub struct Error<R = 
+()> {
+    |            ^^^^^
+    = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: `?` couldn't 
+convert the error: `(dyn 
+Operator + 'static): Sync` 
+is not satisfied
+   --> src\detector.rs:26:66
+    |
+ 26 |             .with_optim
+ization_level(GraphOptimizati
+onLevel::All)?
+    |              ----------
+-----------------------------
+-------------^ `(dyn 
+Operator + 'static)` cannot 
+be shared between threads 
+safely
+    |              |
+    |              this 
+can't be annotated with `?` 
+because it has type 
+`Result<_, 
+ort::Error<SessionBuilder>>`
+    |
+    = help: the trait `Sync` 
+is not implemented for `(dyn 
+Operator + 'static)`
+    = note: the question 
+mark operation (`?`) 
+implicitly performs a 
+conversion on the error 
+value using the `From` trait
+    = note: required for 
+`Unique<(dyn Operator + 
+'static)>` to implement 
+`Sync`
+note: required because it 
+appears within the type 
+`Box<(dyn Operator + 
+'static)>`
+   --> /rustc/4a4ef493e3a1488
+c6e321570238084b38948f6db/lib
+rary\alloc\src\boxed.rs:234:1
+1
+note: required because it 
+appears within the type `oper
+ator::bound::BoundOperator`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\operator\bound.rs:12
+:19
+    |
+ 12 | pub(crate) struct 
+BoundOperator {
+    |                   
+^^^^^^^^^^^^^
+    = note: required for `Uni
+que<operator::bound::BoundOpe
+rator>` to implement `Sync`
+note: required because it 
+appears within the type `Box<
+operator::bound::BoundOperato
+r>`
+   --> /rustc/4a4ef493e3a1488
+c6e321570238084b38948f6db/lib
+rary\alloc\src\boxed.rs:234:1
+1
+note: required because it 
+appears within the type `Phan
+tomData<Box<operator::bound::
+BoundOperator>>`
+   --> /rustc/4a4ef493e3a1488
+c6e321570238084b38948f6db/lib
+rary\core\src\marker.rs:819:1
+1
+note: required because it 
+appears within the type `ort:
+:__private::alloc::raw_vec::R
+awVec<Box<operator::bound::Bo
+undOperator>>`
+   --> /rustc/4a4ef493e3a1488
+c6e321570238084b38948f6db/lib
+rary\alloc\src\raw_vec\mod.rs
+:73:18
+note: required because it 
+appears within the type `Vec<
+Box<operator::bound::BoundOpe
+rator>>`
+   --> /rustc/4a4ef493e3a1488
+c6e321570238084b38948f6db/lib
+rary\alloc\src\vec\mod.rs:440
+:11
+note: required because it 
+appears within the type 
+`OperatorDomain`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\operator\mod.rs:122:
+12
+    |
+122 | pub struct 
+OperatorDomain {
+    |            
+^^^^^^^^^^^^^^
+    = note: required for 
+`Arc<OperatorDomain>` to 
+implement `Send`
+    = note: 1 redundant 
+requirement hidden
+    = note: required for `sma
+llvec::SmallVec<[Arc<Operator
+Domain>; 1]>` to implement 
+`Send`
+note: required because it 
+appears within the type 
+`SessionBuilder`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\session\builder\mod.
+rs:71:12
+    |
+ 71 | pub struct 
+SessionBuilder {
+    |            
+^^^^^^^^^^^^^^
+note: required because it 
+appears within the type 
+`ort::Error<SessionBuilder>`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\error.rs:75:12
+    |
+ 75 | pub struct Error<R = 
+()> {
+    |            ^^^^^
+    = note: required for 
+`anyhow::Error` to implement 
+`From<ort::Error<SessionBuild
+er>>`
+
+error[E0277]: the trait 
+bound `(_, _): From<ArrayBase
+<ViewRepr<&f32>, Dim<[usize; 
+4]>>>` is not satisfied
+  --> src\detector.rs:85:45
+   |
+85 |         let input = vec!
+[input_array.view().into()];
+   |                         
+                    ^^^^ the 
+trait `From<ArrayBase<ViewRep
+r<&f32>, Dim<[usize; 4]>>>` 
+is not implemented for `(_, 
+_)`
+   |
+   = help: the following 
+other types implement trait 
+`From<T>`:
+             `()` implements 
+`From<Unit>`
+             `(T, T)` 
+implements `From<[T; 2]>`
+             `(T, T, T)` 
+implements `From<[T; 3]>`
+             `(T, T, T, T)` 
+implements `From<[T; 4]>`
+             `(T, T, T, T, 
+T)` implements `From<[T; 5]>`
+             `(T, T, T, T, 
+T, T)` implements `From<[T; 
+6]>`
+             `(T, T, T, T, 
+T, T, T)` implements 
+`From<[T; 7]>`
+             `(T, T, T, T, 
+T, T, T, T)` implements 
+`From<[T; 8]>`
+           and 5 others
+   = note: required for 
+`ArrayBase<ViewRepr<&f32>, 
+Dim<[usize; 4]>>` to 
+implement `Into<(_, _)>`
+
+error[E0599]: no method 
+named `shape` found for 
+tuple `(&ort::value::Shape, 
+&[f32])` in the current scope
+   --> src\detector.rs:102:40
+    |
+102 |         let 
+output_shape = 
+output_data.shape();
+    |                        
+                ^^^^^ method 
+not found in 
+`(&ort::value::Shape, 
+&[f32])`
+
+error[E0599]: no method 
+named `view` found for tuple 
+`(&ort::value::Shape, 
+&[f32])` in the current scope
+   --> src\detector.rs:103:41
+    |
+103 |         let 
+output_tensor = output_data.v
+iew().into_dyn();
+    |                        
+                 ^^^^ method 
+not found in 
+`(&ort::value::Shape, 
+&[f32])`
+
+Some errors have detailed 
+explanations: E0277, E0599.
+For more information about 
+an error, try `rustc 
+--explain E0277`.
+warning: `apd_detector` (bin 
+"apd_detector") generated 3 
+warnings
+error: could not compile 
+`apd_detector` (bin 
+"apd_detector") due to 12 
+previous errors; 3 warnings 
+emitted

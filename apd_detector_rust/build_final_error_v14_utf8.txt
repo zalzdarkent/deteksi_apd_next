@@ -1,0 +1,151 @@
+﻿**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.14.28
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+cmd :    Compiling 
+apd_detector v0.1.0 (C:\Magan
+g_Alif\Trial\apd_detector_rus
+t)
+At line:1 char:1
++ cmd /c "call ""C:\Program 
+Files\Microsoft Visual 
+Studio\2022\Communit ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (   Comp  
+  iling ap..._detector_rus   
+ t):String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+warning: unused import: 
+`std::path::PathBuf`
+ --> src\main.rs:2:5
+  |
+2 | use std::path::PathBuf;
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: 
+`#[warn(unused_imports)]` 
+(part of `#[warn(unused)]`) 
+on by default
+
+warning: unused imports: 
+`CV_32F` and `Size`
+ --> src\utils.rs:1:40
+  |
+1 | use 
+opencv::core::{Point, 
+Scalar, Mat, Size, CV_32F};
+  |                          
+              ^^^^  ^^^^^^
+
+error[E0277]: the trait 
+bound 
+`ArrayBase<ViewRepr<&f32>, 
+Dim<[usize; 4]>>: 
+OwnedTensorArrayData<_>` is 
+not satisfied
+   --> src\detector.rs:52:57
+    |
+ 52 |         let 
+input_value = ort::value::Val
+ue::from_array(input_array.vi
+ew())
+    |                        
+   --------------------------
+--- ^^^^^^^^^^^^^^^^^^ the 
+trait 
+`OwnedTensorArrayData<_>` is 
+not implemented for 
+`ArrayBase<ViewRepr<&f32>, 
+Dim<[usize; 4]>>`
+    |                        
+   |
+    |                        
+   required by a bound 
+introduced by this call
+    |
+help: the following other 
+types implement trait 
+`OwnedTensorArrayData<I>`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\value\impl_tensor\cr
+eate.rs:442:1
+    |
+442 | impl<T: Clone + 
+'static, D: Dimension + 
+'static> 
+OwnedTensorArrayData<T> for 
+Array<T, D> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^ `ndarray::ArrayBase<n
+darray::data_repr::OwnedRepr<
+T>, D>`
+...
+553 | impl<T: Clone + 
+'static, D: ToShape> 
+OwnedTensorArrayData<T> for 
+(D, Vec<T>) {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^ 
+`(D, Vec<T>)`
+...
+569 | impl<T: Clone + 
+'static, D: ToShape> 
+OwnedTensorArrayData<T> for 
+(D, Box<[T]>) {
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+`(D, Box<[T]>)`
+    = note: there are 
+multiple different versions 
+of crate `ndarray` in the 
+dependency graph
+    = help: you can use 
+`cargo tree` to explore your 
+dependency tree
+note: required by a bound in 
+`ort::value::impl_tensor::cre
+ate::<impl ort::value::Value<
+TensorValueType<T>>>::from_ar
+ray`
+   --> C:\Users\Magang\.cargo
+\registry\src\index.crates.io
+-1949cf8c6b5b557f\ort-2.0.0-r
+c.12\src\value\impl_tensor\cr
+eate.rs:139:32
+    |
+139 |     pub fn 
+from_array(input: impl 
+OwnedTensorArrayData<T>) -> 
+Result<Tensor<T>> {
+    |                        
+           
+^^^^^^^^^^^^^^^^^^^^^^^ 
+required by this bound in `or
+t::value::impl_tensor::create
+::<impl Value<TensorValueType
+<T>>>::from_array`
+
+For more information about 
+this error, try `rustc 
+--explain E0277`.
+warning: `apd_detector` (bin 
+"apd_detector") generated 2 
+warnings
+error: could not compile 
+`apd_detector` (bin 
+"apd_detector") due to 1 
+previous error; 2 warnings 
+emitted
